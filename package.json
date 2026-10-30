@@ -11,9 +11,13 @@
     "build": "pnpm --recursive --if-present run build",
     "lint": "pnpm --recursive --if-present run lint",
     "typecheck": "pnpm --recursive --if-present run typecheck",
-    "test": "pnpm --recursive --if-present run test"
+    "test": "pnpm --recursive --if-present run test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
+    "prettier": "^3.9.10",
+    "prettier-plugin-tailwindcss": "^0.8.1",
     "typescript": "~6.0.3"
   }
 }

@@ -18,9 +18,14 @@ Toute nouvelle commande récurrente y gagne une cible documentée.
 ```
 make install     # pnpm install (lockfile figé si CI=1)
 make dev         # applications en mode développement
-make check       # lint + typecheck + test, ce que la CI vérifie
+make format      # Prettier (classes Tailwind triées)
+make check       # format-check + lint + typecheck + test, ce que la CI vérifie
 make build       # build de tous les paquets
 ```
+
+Prettier et sa config vivent à la racine (tout le dépôt) ; ESLint et Vitest sont
+configurés par paquet. `eslint-config-prettier` reste en dernier dans chaque config
+ESLint. Lint en `--max-warnings=0` : un avertissement casse la CI.
 
 Chaque paquet hérite de `tsconfig.base.json` (strict, `noUncheckedIndexedAccess`…)
 et expose les scripts `lint`, `typecheck`, `test`, `build` qu'il supporte : les scripts

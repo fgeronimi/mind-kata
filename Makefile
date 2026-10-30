@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install dev build lint typecheck test check clean
+.PHONY: help install dev build format format-check lint typecheck test check clean
 
 help: ## Liste les cibles disponibles
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
@@ -13,6 +13,12 @@ dev: ## Lance les applications en mode développement
 build: ## Construit toutes les applications et paquets
 	pnpm build
 
+format: ## Formate le code avec Prettier
+	pnpm format
+
+format-check: ## Vérifie le formatage sans rien modifier
+	pnpm format:check
+
 lint: ## Analyse statique du code
 	pnpm lint
 
@@ -22,7 +28,7 @@ typecheck: ## Vérifie les types TypeScript
 test: ## Lance les tests unitaires
 	pnpm test
 
-check: lint typecheck test ## Tout ce que la CI vérifie
+check: format-check lint typecheck test ## Tout ce que la CI vérifie
 
 clean: ## Supprime dépendances et artefacts de build
 	rm -rf node_modules apps/*/node_modules packages/*/node_modules apps/*/.next apps/*/dist packages/*/dist
