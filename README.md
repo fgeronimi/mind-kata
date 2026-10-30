@@ -1,5 +1,7 @@
 # Mind Kata
 
+[![CI](https://github.com/fgeronimi/mind-kata/actions/workflows/ci.yml/badge.svg)](https://github.com/fgeronimi/mind-kata/actions/workflows/ci.yml)
+
 Outil d'entraînement et d'évaluation par la pratique : concepts déclinés par niveau de
 séniorité, exercices éclair dont la réponse attendue est un arbre de raisonnement, et
 simulations d'entretien. Le moteur est générique ; chaque domaine (le premier est le
