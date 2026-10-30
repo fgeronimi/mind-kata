@@ -1,0 +1,10 @@
+packages:
+  - apps/*
+  - packages/*
+
+# pnpm bloque les scripts d'installation par défaut. Ces deux paquets livrent leur
+# binaire natif précompilé en dépendance optionnelle ; leur postinstall n'est qu'un
+# repli inutile ici.
+allowBuilds:
+  sharp: false
+  unrs-resolver: false

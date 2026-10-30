@@ -15,7 +15,16 @@ Point d'entrée unique : le `Makefile` à la racine (`make help` liste les cible
 Il enveloppe les scripts pnpm ; la CI appelle les mêmes cibles qu'en local.
 Toute nouvelle commande récurrente y gagne une cible documentée.
 
-À compléter au lot 0 (install, dev, lint, typecheck, test, build, docker).
+```
+make install     # pnpm install (lockfile figé si CI=1)
+make dev         # applications en mode développement
+make check       # lint + typecheck + test, ce que la CI vérifie
+make build       # build de tous les paquets
+```
+
+Chaque paquet hérite de `tsconfig.base.json` (strict, `noUncheckedIndexedAccess`…)
+et expose les scripts `lint`, `typecheck`, `test`, `build` qu'il supporte : les scripts
+racine les lancent récursivement avec `--if-present`.
 
 ## Architecture
 
@@ -87,4 +96,13 @@ tout vient du `domaine.yaml` du pack, validé par un schéma Zod. Un contenu inv
 
 ## Pièges connus
 
-Rien pour l'instant.
+- Next.js 16.4 diffère de ce que connaissent les modèles (Cache Components, Partial
+  Prefetching…). Avant d'écrire du code Next, lire la doc embarquée dans
+  `apps/web/node_modules/next/dist/docs/` plutôt que de se fier à sa mémoire.
+- Un seul workspace, un seul lockfile à la racine. Un outil qui génère un
+  `pnpm-workspace.yaml` ou un `pnpm-lock.yaml` dans un sous-dossier : le supprimer.
+- pnpm bloque les scripts d'installation : tout nouveau paquet qui en a un doit être
+  tranché dans `allowBuilds` (`pnpm-workspace.yaml`), avec la raison en commentaire.
+- TypeScript est figé en `~6.0` : typescript-eslint n'accepte pas encore la 7
+  (compilateur Go). Ne pas monter de version tant que sa plage `peerDependencies`
+  ne l'inclut pas.
