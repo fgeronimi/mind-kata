@@ -1,0 +1,23 @@
+# Consignes et notes privées
+*.local.md
+
+# Dépendances et builds
+node_modules/
+.next/
+out/
+dist/
+build/
+.turbo/
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+
+# Environnement
+.env
+.env.*
+!.env.example
+
+# Divers
+.DS_Store
+*.log
+.claude/settings.local.json
