@@ -106,6 +106,9 @@ tout vient du `domaine.yaml` du pack, validé par un schéma Zod. Un contenu inv
   `apps/web/node_modules/next/dist/docs/` plutôt que de se fier à sa mémoire.
 - Un seul workspace, un seul lockfile à la racine. Un outil qui génère un
   `pnpm-workspace.yaml` ou un `pnpm-lock.yaml` dans un sous-dossier : le supprimer.
+- `PageProps`, `LayoutProps` et les types de routes sont générés par Next dans
+  `.next/types/` : `tsc` seul échoue sur un clone propre. Le script `typecheck` lance
+  `next typegen` d'abord. Pour reproduire la CI : supprimer `apps/web/.next` avant.
 - pnpm bloque les scripts d'installation : tout nouveau paquet qui en a un doit être
   tranché dans `allowBuilds` (`pnpm-workspace.yaml`), avec la raison en commentaire.
 - TypeScript est figé en `~6.0` : typescript-eslint n'accepte pas encore la 7
