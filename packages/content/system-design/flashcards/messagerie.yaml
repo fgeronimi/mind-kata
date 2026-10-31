@@ -1,0 +1,113 @@
+- id: modules-reagissent-au-dossier
+  situation: Plusieurs modules doivent réagir à la création d'un dossier, sans dépendre les uns des autres.
+  categorie: messagerie
+  arbre:
+    - mot: bus d'événements
+      synonymes: [event bus, pub sub, bus de messages, événement]
+      pourquoi: découpler les modules
+      niveau: confirme
+      concept: pub-sub
+      enfants:
+        - mot: rabbitmq
+          pourquoi: une file par abonné, avec retry et file d'échecs
+          niveau: senior
+          alternatives:
+            - mot: kafka
+              condition: rejouer l'historique ou très gros volume
+        - mot: outbox
+          pourquoi: ne pas perdre l'événement si l'application plante après l'écriture
+          niveau: senior
+          concept: outbox
+          enfants:
+            - mot: polling
+              niveau: senior
+            - mot: cdc
+              synonymes: [debezium, change data capture]
+              niveau: lead
+              concept: cdc
+        - mot: consommateurs idempotents
+          synonymes: [idempotence, idempotent]
+          pourquoi: un message peut arriver deux fois
+          niveau: senior
+          concept: idempotence
+
+- id: requete-renvoyee-deux-fois
+  situation: Après une coupure réseau, l'application mobile renvoie la même demande de paiement.
+  categorie: messagerie
+  arbre:
+    - mot: idempotence
+      synonymes: [idempotent]
+      pourquoi: rejouer la même demande ne doit produire qu'un seul effet
+      niveau: confirme
+      concept: idempotence
+      enfants:
+        - mot: clé d'idempotence
+          synonymes: [idempotency key, cle unique]
+          pourquoi: identifier la demande, générée par le client
+          niveau: confirme
+          enfants:
+            - mot: contrainte d'unicité
+              synonymes: [index unique, unique]
+              pourquoi: trancher quand deux demandes identiques arrivent en même temps
+              niveau: senior
+            - mot: réponse rejouée
+              synonymes: [même réponse]
+              pourquoi: le client reçoit le résultat de la première demande, pas une erreur
+              niveau: senior
+
+- id: message-recu-deux-fois
+  situation: Le bus livre parfois le même message deux fois, et un stock est décrémenté deux fois.
+  categorie: messagerie
+  arbre:
+    - mot: consommateur idempotent
+      synonymes: [idempotence, idempotent]
+      pourquoi: la livraison est « au moins une fois », le doublon est normal
+      niveau: confirme
+      concept: idempotence
+      enfants:
+        - mot: identifiant de message
+          synonymes: [id d'événement, message id]
+          pourquoi: reconnaître un message déjà traité
+          niveau: senior
+          enfants:
+            - mot: inbox
+              pourquoi: stocker les identifiants traités dans la même transaction que l'effet
+              niveau: senior
+              concept: inbox
+        - mot: état complet
+          synonymes: [état plutôt que delta]
+          pourquoi: appliquer deux fois « stock = 12 » est sans danger, pas « stock − 1 »
+          niveau: lead
+        - mot: numéro de version
+          synonymes: [version]
+          pourquoi: ignorer un message plus ancien que l'état connu
+          niveau: senior
+
+- id: evenement-perdu
+  situation: Il arrive qu'une commande soit bien enregistrée en base mais que l'événement correspondant ne parte jamais sur le bus.
+  categorie: messagerie
+  arbre:
+    - mot: outbox
+      synonymes: [transactional outbox, boîte d'envoi]
+      pourquoi: écrire l'événement dans la même transaction que la commande
+      niveau: senior
+      concept: outbox
+      enfants:
+        - mot: polling
+          pourquoi: un worker lit la table et publie, simple et suffisant le plus souvent
+          niveau: senior
+          enfants:
+            - mot: skip locked
+              synonymes: [for update skip locked]
+              pourquoi: faire tourner plusieurs workers sans qu'ils publient la même ligne
+              niveau: lead
+        - mot: cdc
+          synonymes: [debezium, change data capture]
+          pourquoi: lire le journal de la base, pour plus de débit et moins de latence
+          niveau: lead
+          concept: cdc
+        - mot: consommateurs idempotents
+          synonymes: [idempotence]
+          pourquoi: la publication peut avoir lieu deux fois
+          niveau: senior
+          concept: idempotence

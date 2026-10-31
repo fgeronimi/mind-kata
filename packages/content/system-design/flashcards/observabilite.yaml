@@ -1,0 +1,52 @@
+- id: requete-lente-cinq-services
+  situation: Une requête met trois secondes et traverse cinq services. Personne ne sait lequel ralentit.
+  categorie: observabilite
+  arbre:
+    - mot: tracing distribué
+      synonymes: [tracing, trace distribuée, distributed tracing]
+      pourquoi: suivre la requête de bout en bout
+      niveau: confirme
+      concept: tracing-distribue
+      enfants:
+        - mot: opentelemetry
+          synonymes: [otel]
+          pourquoi: instrumenter avec un standard, quel que soit le backend
+          niveau: senior
+        - mot: identifiant de trace
+          synonymes: [trace id, identifiant de corrélation]
+          pourquoi: propagé dans les appels et les messages pour relier les étapes
+          niveau: senior
+        - mot: logs métriques traces
+          synonymes: [trois piliers]
+          pourquoi: relier les trois par le même identifiant
+          niveau: lead
+          concept: logs-centralises
+
+- id: promesse-de-disponibilite
+  situation: « Vous nous aviez promis 99,9 % de disponibilité. » Que mesurez-vous, et qu'est-ce que cela permet ?
+  categorie: observabilite
+  arbre:
+    - mot: slo
+      synonymes: [objectif de niveau de service]
+      pourquoi: un objectif mesuré sur ce que vit l'utilisateur
+      niveau: confirme
+      concept: sli-slo-sla
+      enfants:
+        - mot: sli
+          synonymes: [indicateur]
+          pourquoi: ce qu'on mesure réellement, par exemple les requêtes réussies en moins de 300 ms
+          niveau: senior
+        - mot: sla
+          synonymes: [accord de niveau de service, contrat]
+          pourquoi: l'engagement contractuel, plus prudent que l'objectif interne
+          niveau: confirme
+        - mot: budget d'erreur
+          synonymes: [error budget, 43 minutes]
+          pourquoi: 99,9 % laisse environ 43 minutes d'indisponibilité par mois
+          niveau: senior
+          enfants:
+            - mot: burn rate
+              synonymes: [vitesse de consommation]
+              pourquoi: alerter quand le budget se consomme trop vite
+              niveau: lead
+              concept: burn-rate

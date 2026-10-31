@@ -1,0 +1,23 @@
+- id: secret-dans-git
+  situation: Un mot de passe de base de données a été commité en clair dans le dépôt il y a trois mois.
+  categorie: securite
+  arbre:
+    - mot: rotation
+      synonymes: [changer le secret, révoquer, renouveler]
+      pourquoi: le secret est compromis, le retirer de l'historique ne suffit pas
+      niveau: confirme
+      concept: gestion-des-secrets
+      enfants:
+        - mot: journaux d'accès
+          synonymes: [logs d'accès, vérifier les accès]
+          pourquoi: savoir si le secret a été utilisé par quelqu'un d'autre
+          niveau: senior
+        - mot: gestionnaire de secrets
+          synonymes: [secret manager, vault, coffre]
+          pourquoi: les secrets vivent hors du code, injectés à l'exécution
+          niveau: senior
+          enfants:
+            - mot: scan de secrets
+              synonymes: [gitleaks, détection de secrets]
+              pourquoi: empêcher que cela se reproduise, dès la CI
+              niveau: lead

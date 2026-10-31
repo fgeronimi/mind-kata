@@ -1,0 +1,71 @@
+- id: api-externe-lente
+  situation: Une API externe se met à répondre en trente secondes, et tous les workers restent bloqués à l'attendre.
+  categorie: resilience
+  arbre:
+    - mot: timeout
+      synonymes: [délai maximal, time out]
+      pourquoi: un appel ne doit jamais attendre indéfiniment, sinon il retient workers et connexions
+      niveau: confirme
+      concept: timeout
+      enfants:
+        - mot: circuit breaker
+          synonymes: [disjoncteur]
+          pourquoi: cesser d'appeler un service en panne et servir un mode dégradé
+          niveau: senior
+          concept: circuit-breaker
+          enfants:
+            - mot: mode dégradé
+              synonymes: [fonctionnement dégradé]
+              pourquoi: le produit décide de ce que voit l'utilisateur quand le tiers est coupé
+              niveau: lead
+        - mot: retry
+          synonymes: [nouvelle tentative, réessayer]
+          pourquoi: une erreur passagère peut réussir au deuxième essai
+          niveau: confirme
+          concept: retry-backoff
+          enfants:
+            - mot: backoff
+              synonymes: [backoff exponentiel, délai croissant]
+              pourquoi: laisser au service le temps de se remettre
+              niveau: senior
+            - mot: jitter
+              synonymes: [délai aléatoire]
+              pourquoi: éviter que tous les clients réessaient à la même seconde
+              niveau: senior
+    - mot: bulkhead
+      synonymes: [cloison étanche, pool séparé]
+      pourquoi: isoler les workers de ce tiers pour qu'il ne bloque pas le reste
+      niveau: senior
+      concept: bulkhead
+
+- id: client-trop-gourmand
+  situation: Un client de votre API publique envoie mille requêtes par seconde et ralentit tous les autres.
+  categorie: resilience
+  arbre:
+    - mot: rate limiting
+      synonymes: [limitation de débit, throttling, quota]
+      pourquoi: plafonner ce que chaque client peut consommer
+      niveau: confirme
+      concept: rate-limiting
+      enfants:
+        - mot: token bucket
+          synonymes: [seau à jetons]
+          pourquoi: tolère les rafales courtes tout en tenant un débit moyen
+          niveau: senior
+        - mot: "429"
+          synonymes: [too many requests]
+          pourquoi: une réponse claire, que le client sait interpréter
+          niveau: confirme
+          enfants:
+            - mot: retry-after
+              pourquoi: dire au client quand réessayer, au lieu qu'il insiste aussitôt
+              niveau: senior
+        - mot: compteur partagé
+          synonymes: [redis, cache partagé]
+          pourquoi: avec plusieurs instances, la limite doit être globale
+          niveau: senior
+        - mot: api gateway
+          synonymes: [passerelle]
+          pourquoi: appliquer la limite avant que la requête n'atteigne l'application
+          niveau: senior
+          concept: api-gateway
