@@ -22,6 +22,7 @@ make dev         # applications en mode développement
 make format      # Prettier (classes Tailwind triées)
 make check       # format-check + lint + typecheck + test, ce que la CI vérifie
 make build       # build de tous les paquets
+make test-e2e    # parcours Playwright contre le serveur de production (après make build)
 make docker-build && make docker-run   # image de prod sur http://localhost:8080
 ```
 

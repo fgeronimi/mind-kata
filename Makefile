@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install dev build format format-check lint typecheck test check docker-build docker-run clean
+.PHONY: help install dev build format format-check lint typecheck test test-e2e check docker-build docker-run clean
 
 IMAGE ?= mind-kata-web
 
@@ -29,6 +29,9 @@ typecheck: ## Vérifie les types TypeScript
 
 test: ## Lance les tests unitaires
 	pnpm test
+
+test-e2e: ## Parcours dans un vrai navigateur, contre le build de production (après make build)
+	pnpm --filter @mind-kata/web test:e2e
 
 check: format-check lint typecheck test ## Tout ce que la CI vérifie
 
