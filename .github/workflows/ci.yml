@@ -5,16 +5,18 @@ on:
   push:
     branches: [main]
 
-# Un nouveau push sur une PR rend la vérification précédente obsolète.
+# Sur une PR, un nouveau push rend le run précédent obsolète. Sur main, jamais
+# d'annulation : un déploiement interrompu laisserait un état incertain.
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
 
 env:
   NEXT_TELEMETRY_DISABLED: 1
+  IMAGE: ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.GCP_AR_REPO }}/web:${{ github.sha }}
 
 jobs:
   verification:
@@ -35,3 +37,78 @@ jobs:
       - run: make install
       - run: make check
       - run: make build
+
+  # Construite sur chaque PR pour qu'un Dockerfile cassé soit vu avant le merge ;
+  # poussée vers Artifact Registry uniquement depuis main.
+  image:
+    needs: verification
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - id: gcp
+        if: github.ref == 'refs/heads/main'
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_SA_DEPLOIEMENT }}
+          token_format: access_token
+
+      - if: github.ref == 'refs/heads/main'
+        uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
+        with:
+          registry: ${{ vars.GCP_REGION }}-docker.pkg.dev
+          username: oauth2accesstoken
+          password: ${{ steps.gcp.outputs.access_token }}
+
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          platforms: linux/amd64
+          tags: ${{ env.IMAGE }}
+          push: ${{ github.ref == 'refs/heads/main' }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploiement:
+    if: github.ref == 'refs/heads/main'
+    needs: image
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+    environment:
+      name: production
+      url: ${{ steps.deploiement.outputs.url }}
+    steps:
+      - uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_SA_DEPLOIEMENT }}
+
+      # max-instances plafonne le coût en cas de pic ou d'abus ; min-instances=0 :
+      # rien n'est facturé au repos.
+      - id: deploiement
+        uses: google-github-actions/deploy-cloudrun@2028e2d7d30a78c6910e0632e48dd561b064884d # v3.0.1
+        with:
+          project_id: ${{ vars.GCP_PROJECT_ID }}
+          region: ${{ vars.GCP_REGION }}
+          service: web
+          image: ${{ env.IMAGE }}
+          flags: >-
+            --service-account=${{ vars.GCP_SA_EXECUTION }}
+            --allow-unauthenticated
+            --min-instances=0
+            --max-instances=2
+            --cpu=1
+            --memory=512Mi
+
+      - name: Vérifie que le service répond
+        run: curl --fail --silent --show-error --output /dev/null "${{ steps.deploiement.outputs.url }}"
