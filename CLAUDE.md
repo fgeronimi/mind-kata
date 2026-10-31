@@ -114,6 +114,13 @@ tout vient du `domaine.yaml` du pack, validé par un schéma Zod. Un contenu inv
 - `PageProps`, `LayoutProps` et les types de routes sont générés par Next dans
   `.next/types/` : `tsc` seul échoue sur un clone propre. Le script `typecheck` lance
   `next typegen` d'abord. Pour reproduire la CI : supprimer `apps/web/.next` avant.
+- Une fois empaqueté par Next, `import.meta.dirname` vaut `undefined` : tout chemin
+  de fichier calculé depuis un paquet du workspace doit prévoir ce cas (voir
+  `packages/content/src/index.ts`).
+- Avec Cache Components, `dynamicParams` n'existe plus : une URL hors de
+  `generateStaticParams` est rendue à l'exécution. Les fichiers lus au rendu doivent
+  être dans l'image (`outputFileTracingIncludes`), et une page introuvable répond 200
+  avec `noindex` (le streaming a commencé avant `notFound()`), pas 404.
 - pnpm bloque les scripts d'installation : tout nouveau paquet qui en a un doit être
   tranché dans `allowBuilds` (`pnpm-workspace.yaml`), avec la raison en commentaire.
 - TypeScript est figé en `~6.0` : typescript-eslint n'accepte pas encore la 7
