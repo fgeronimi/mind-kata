@@ -1,10 +1,13 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { parse } from "yaml";
-import type { z } from "zod";
+import { z } from "zod";
 import { type Architecture, schemaArchitecture } from "./architecture";
 import { type Concept, schemaConcept } from "./concept";
 import { type Domaine, schemaDomaine } from "./domaine";
+
+// Les erreurs de contenu sont lues par les rédacteurs : dans leur langue.
+z.config(z.locales.fr());
 
 export interface Pack {
   domaine: Domaine;
