@@ -37,15 +37,24 @@ test("une série de dix situations se joue de bout en bout", async ({
 test("le score suit la réponse, puis les corrections, règle du parent comprise", async ({
   page,
 }) => {
+  const situation =
+    "Une clé de cache très demandée expire, et cinq mille requêtes frappent la base en même temps.";
   await page.goto("/system-design/exercices");
-  // Une seule situation dans cette catégorie : le tirage devient déterministe.
+  // La catégorie compte moins de dix situations : la série les contient toutes, dans
+  // un ordre aléatoire. On avance jusqu'à celle qu'on veut vérifier.
   await page
     .getByLabel("Catégorie")
     .selectOption({ label: "Cache et performance" });
   await page.getByRole("button", { name: "Commencer la série" }).click();
+  while (!(await page.getByLabel(situation).isVisible())) {
+    await page
+      .getByRole("button", { name: "Révéler la réponse attendue" })
+      .click();
+    await page.getByRole("button", { name: "À revoir" }).click();
+  }
 
   await page
-    .getByRole("textbox")
+    .getByLabel(situation)
     .fill("C'est une ruée sur le cache : je mets un VERROU.");
   await page
     .getByRole("button", { name: "Révéler la réponse attendue" })
