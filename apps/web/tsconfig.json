@@ -11,7 +11,11 @@
     ],
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+    // Les types générés par Next dans .next/ contiennent des imports inutilisés ; la
+    // règle no-unused-vars d'ESLint couvre le code de l'application.
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
   },
   "include": [
     "next-env.d.ts",

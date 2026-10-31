@@ -44,11 +44,17 @@ describe("schemaFlashcard", () => {
   });
 
   it("refuse un niveau inconnu au fond de l'arbre", () => {
-    const arbre = structuredClone(sauceQuiTranche.arbre);
-    arbre[0]!.enfants[0]!.enfants[0] = {
-      mot: "rattrapage",
-      niveau: "apprenti",
-    } as never;
+    const arbre = [
+      {
+        mot: "émulsion",
+        enfants: [
+          {
+            mot: "température",
+            enfants: [{ mot: "rattrapage", niveau: "apprenti" }],
+          },
+        ],
+      },
+    ];
     const resultat = schema.safeParse({ ...sauceQuiTranche, arbre });
     expect(resultat.error?.issues[0]?.path).toEqual([
       "arbre",
@@ -62,8 +68,14 @@ describe("schemaFlashcard", () => {
   });
 
   it("exige une condition pour chaque alternative", () => {
-    const arbre = structuredClone(sauceQuiTranche.arbre);
-    arbre[0]!.enfants[0]!.alternatives = [{ mot: "bain-marie" }] as never;
-    expect(schema.safeParse({ ...sauceQuiTranche, arbre }).success).toBe(false);
+    const arbre = [{ mot: "émulsion", alternatives: [{ mot: "bain-marie" }] }];
+    const resultat = schema.safeParse({ ...sauceQuiTranche, arbre });
+    expect(resultat.error?.issues[0]?.path).toEqual([
+      "arbre",
+      0,
+      "alternatives",
+      0,
+      "condition",
+    ]);
   });
 });
