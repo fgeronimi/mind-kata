@@ -3,7 +3,7 @@ id: rate-limiting
 terme: Rate limiting
 alias: [limitation de débit, throttling, token bucket]
 categorie: resilience
-liens: [bulkhead, retry-backoff]
+liens: [bulkhead, retry-backoff, load-shedding]
 niveaux:
   confirme: Sait qu'on limite le nombre de requêtes par client pour protéger la plateforme, et qu'on répond 429 au-delà.
   senior: Choisit l'algorithme (token bucket, fenêtre glissante), place la limite au bon endroit (passerelle, CDN, application), partage le compteur entre instances et renvoie un Retry-After.

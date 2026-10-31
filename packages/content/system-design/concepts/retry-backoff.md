@@ -3,7 +3,7 @@ id: retry-backoff
 terme: Retry avec backoff
 alias: [retry, backoff exponentiel, jitter]
 categorie: resilience
-liens: [idempotence, timeout, circuit-breaker]
+liens: [idempotence, timeout, circuit-breaker, dlq]
 niveaux:
   confirme: Sait qu'on réessaie une erreur passagère avec un délai qui augmente (1 s, 2 s, 4 s), et pas en boucle immédiate.
   senior: Ajoute du jitter, limite le nombre de tentatives, ne réessaie que les erreurs transitoires (pas un 400), et vérifie que l'opération réessayée est idempotente.

@@ -3,7 +3,7 @@ id: webhook
 terme: Webhook
 alias: [rappel HTTP]
 categorie: messagerie
-liens: [idempotence, retry-backoff, bulkhead, circuit-breaker]
+liens: [idempotence, inbox, retry-backoff, bulkhead, circuit-breaker, dlq]
 niveaux:
   confirme: Sait qu'un webhook est un appel HTTP qu'un système envoie à une URL pour prévenir d'un événement, plutôt que d'être interrogé.
   senior: Côté réception, vérifie la signature, stocke l'événement avec son identifiant pour ignorer les doublons et répond vite ; côté émission, envoie depuis une file avec retry, backoff et file d'échecs.
