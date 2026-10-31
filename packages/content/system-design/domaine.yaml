@@ -1,0 +1,59 @@
+id: system-design
+nom: System design
+langue: fr
+description: >-
+  Concevoir des systèmes qui tiennent la charge, résistent aux pannes et évoluent avec
+  l'équipe : les concepts, les architectures types et les arbitrages attendus en
+  entretien comme en production.
+
+# Du moins au plus exigeant.
+niveaux:
+  - id: confirme
+    libelle: Confirmé
+    description: Connaît la notion, la nomme au bon moment et sait à quel problème elle répond.
+  - id: senior
+    libelle: Senior
+    description: La met en œuvre, en connaît les pièges et sait quand elle est indispensable.
+  - id: lead
+    libelle: Lead
+    description: En fait une règle pour l'équipe, en arbitre le coût et sait quand s'en passer.
+
+categories:
+  - id: resilience
+    libelle: Résilience
+    description: Encaisser les pannes et les lenteurs sans tout faire tomber.
+  - id: messagerie
+    libelle: Messagerie et asynchrone
+    description: Files, événements, et la fiabilité des échanges entre systèmes.
+  - id: donnees
+    libelle: Données
+    description: Stockage, cohérence, réplication et évolution des schémas.
+  - id: cache
+    libelle: Cache et performance
+    description: Servir vite sans servir faux.
+  - id: architecture
+    libelle: Architecture
+    description: Découper un système et faire cohabiter ses parties.
+  - id: infrastructure
+    libelle: Infrastructure
+    description: Répartition de charge, disponibilité, communication réseau.
+  - id: deploiement
+    libelle: Déploiement
+    description: Livrer souvent sans casser la production.
+  - id: securite
+    libelle: Sécurité
+    description: Identités, chiffrement, données personnelles.
+  - id: observabilite
+    libelle: Observabilité
+    description: Savoir ce qui se passe en production, avant que l'utilisateur ne le signale.
+  - id: tests
+    libelle: Tests
+    description: Prouver que le système tient ses promesses.
+  - id: couts
+    libelle: Coûts
+    description: Rendre la facture lisible et l'arbitrage chiffrable.
+  - id: organisation
+    libelle: Organisation
+    description: Équipes, pilotage et conduite du changement.
+
+types: [concept]
