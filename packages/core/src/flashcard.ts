@@ -5,13 +5,13 @@ import { type Domaine, enumCategories, enumNiveaux } from "./domaine";
 // Une réponse attendue est un arbre : un nœud ne vaut quelque chose que si son parent
 // a été cité, d'où la structure récursive plutôt qu'une liste de mots-clés.
 export const schemaFlashcard = (domaine: Domaine) => {
-  const alternative = z.object({
+  const alternative = z.strictObject({
     mot: texte,
     synonymes: z.array(texte).default([]),
     condition: texte,
   });
 
-  const noeud = z.object({
+  const noeud = z.strictObject({
     mot: texte,
     synonymes: z.array(texte).default([]),
     pourquoi: texte.optional(),
@@ -24,7 +24,7 @@ export const schemaFlashcard = (domaine: Domaine) => {
     },
   });
 
-  return z.object({
+  return z.strictObject({
     id: identifiant,
     situation: texte,
     categorie: enumCategories(domaine),

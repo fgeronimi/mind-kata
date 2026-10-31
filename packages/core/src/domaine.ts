@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { identifiant, texte } from "./commun";
 
-const libelle = z.object({
+const libelle = z.strictObject({
   id: identifiant,
   libelle: texte,
   description: texte.optional(),
@@ -19,7 +19,7 @@ export const typesDeContenu = [
   "flashcard",
 ] as const;
 
-export const schemaDomaine = z.object({
+export const schemaDomaine = z.strictObject({
   id: identifiant,
   nom: texte,
   langue: z
