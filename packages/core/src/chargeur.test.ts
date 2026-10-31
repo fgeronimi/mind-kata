@@ -14,7 +14,7 @@ niveaux:
   - { id: chef, libelle: Chef }
 categories:
   - { id: sauces, libelle: Sauces }
-types: [concept, architecture, guide, simulation, equivalences]
+types: [concept, architecture, guide, simulation, equivalences, flashcard]
 `;
 
 const concept = (id: string, liens: string[] = []) => `---
@@ -142,6 +142,43 @@ describe("chargerPack", () => {
     ]);
   });
 
+  it("lit plusieurs situations par fichier et refuse un identifiant en double", () => {
+    const carte = (id: string, concept = "roux") =>
+      `- id: ${id}\n  situation: Une sauce tranche.\n  categorie: sauces\n  arbre:\n    - mot: émulsion\n      concept: ${concept}\n`;
+    const dossierPack = ecrirePack({
+      "domaine.yaml": domaine,
+      "concepts/roux.md": concept("roux"),
+      "flashcards/sauces.yaml": carte("tranche") + carte("grumeaux"),
+      "flashcards/autres.yaml": carte("tranche"),
+    });
+    expect(erreursDe(dossierPack)).toEqual([
+      "cuisine/flashcards/sauces.yaml : id « tranche » déjà utilisé dans cuisine/flashcards/autres.yaml",
+    ]);
+  });
+
+  it("vérifie les concepts cités dans les nœuds d'un arbre", () => {
+    const fichier = [
+      "- id: tranche",
+      "  situation: Une sauce tranche.",
+      "  categorie: sauces",
+      "  arbre:",
+      "    - mot: émulsion",
+      "      enfants:",
+      "        - mot: température",
+      "          concept: cuisson",
+    ].join("\n");
+    expect(
+      erreursDe(
+        ecrirePack({
+          "domaine.yaml": domaine,
+          "flashcards/sauces.yaml": fichier,
+        }),
+      ),
+    ).toEqual([
+      "cuisine/flashcards/sauces.yaml : « tranche », nœud « température » : lien vers le concept inconnu « cuisson »",
+    ]);
+  });
+
   it("accepte un pack sans dossier pour un type déclaré", () => {
     const pack = chargerPack(ecrirePack({ "domaine.yaml": domaine }));
     expect(pack.concepts).toEqual([]);
@@ -200,7 +237,7 @@ describe("chargerPack", () => {
     const erreurs = erreursDe(
       ecrirePack({
         "domaine.yaml": domaine.replace(
-          "types: [concept, architecture, guide, simulation, equivalences]",
+          "types: [concept, architecture, guide, simulation, equivalences, flashcard]",
           "types: [concept]",
         ),
         "architectures/brigade.md": brigade,
