@@ -79,3 +79,138 @@
           pourquoi: créer un index sans bloquer les écritures
           niveau: lead
           concept: index
+
+- id: table-qui-grossit
+  situation: Une table reçoit 50 millions de lignes par mois, et la base atteint 2 To.
+  categorie: donnees
+  arbre:
+    - mot: index
+      pourquoi: vérifier d'abord que les requêtes sont bien indexées
+      niveau: confirme
+      concept: index
+      enfants:
+        - mot: partitionnement
+          synonymes: [partition, partitionner par date]
+          pourquoi: découper par date pour purger et archiver facilement
+          niveau: senior
+          concept: partitionnement
+          enfants:
+            - mot: archivage
+              synonymes: [archiver, stockage froid]
+              pourquoi: sortir l'historique de la base chaude
+              niveau: senior
+            - mot: sharding
+              pourquoi: en dernier recours, on partitionne avant de sharder
+              niveau: lead
+
+- id: magasins-a-proximite
+  situation: Il faut afficher les magasins situés à moins de 5 km de l'utilisateur.
+  categorie: donnees
+  arbre:
+    - mot: postgis
+      synonymes: [extension géographique, recherche géographique]
+      pourquoi: des fonctions de distance dans la base
+      niveau: senior
+      alternatives:
+        - mot: moteur de recherche
+          synonymes: [elasticsearch, opensearch]
+          condition: recherche géographique combinée à du texte et des filtres
+      enfants:
+        - mot: index spatial
+          synonymes: [gist, index géographique]
+          pourquoi: ne pas calculer la distance de chaque magasin
+          niveau: senior
+          concept: index
+        - mot: geohash
+          pourquoi: découper le territoire en cases, pratique pour le cache
+          niveau: lead
+
+- id: grand-compte-donnees-separees
+  situation: Un très gros client exige que ses données soient isolées de celles des autres clients.
+  categorie: donnees
+  arbre:
+    - mot: multi-tenant
+      synonymes: [multi tenant, multi locataire]
+      pourquoi: choisir le modèle d'isolation selon l'exigence
+      niveau: senior
+      concept: multi-tenant
+      enfants:
+        - mot: row level security
+          synonymes: [sécurité au niveau des lignes, rls]
+          pourquoi: base partagée, la base filtre elle-même par client
+          niveau: senior
+          concept: row-level-security
+        - mot: schéma par client
+          pourquoi: un cloisonnement plus fort, toujours dans la même base
+          niveau: senior
+        - mot: base dédiée
+          synonymes: [silo]
+          pourquoi: seulement sur exigence contractuelle ou volume hors norme
+          niveau: lead
+        - mot: cmek
+          synonymes: [clés gérées par le client]
+          pourquoi: le client garde la main sur les clés de chiffrement
+          niveau: lead
+          concept: chiffrement
+
+- id: memoire-saturee-traitement
+  situation: Un traitement charge des millions de lignes et la mémoire du serveur sature.
+  categorie: donnees
+  arbre:
+    - mot: traitement par lots
+      synonymes: [par lots, batch, paquets]
+      pourquoi: ne jamais tout charger en mémoire d'un coup
+      niveau: confirme
+      enfants:
+        - mot: itérateur
+          synonymes: [générateur, yield, curseur, flux]
+          pourquoi: lire en flux, ligne par ligne
+          niveau: senior
+        - mot: vider le contexte
+          synonymes: [clear, détacher]
+          pourquoi: l'ORM garde tout en mémoire tant qu'on ne libère pas
+          niveau: senior
+
+- id: recherche-avec-fautes
+  situation: Les utilisateurs cherchent avec des fautes de frappe ou des mots incomplets, et ne trouvent rien.
+  categorie: donnees
+  arbre:
+    - mot: recherche floue
+      synonymes: [fuzzy search, levenshtein]
+      pourquoi: tolérer une ou deux fautes
+      niveau: senior
+      concept: recherche-floue
+      enfants:
+        - mot: n-grammes
+          synonymes: [ngrammes, edge ngram, autocomplétion]
+          pourquoi: retrouver les mots partiels, pour l'autocomplétion
+          niveau: senior
+        - mot: moteur de recherche
+          synonymes: [elasticsearch, opensearch, meilisearch, pg trgm]
+          pourquoi: des index faits pour ça, alimentés depuis la base
+          niveau: senior
+          concept: cdc
+
+- id: suppression-sur-six-services
+  situation: Un usager demande la suppression de ses données, présentes dans six services et dans les sauvegardes.
+  categorie: donnees
+  arbre:
+    - mot: événement de suppression
+      synonymes: [événement, pub sub]
+      pourquoi: prévenir chaque service qui détient des données
+      niveau: senior
+      concept: pub-sub
+      enfants:
+        - mot: suivi des confirmations
+          synonymes: [confirmations]
+          pourquoi: prouver que chaque service a bien supprimé
+          niveau: lead
+    - mot: crypto-shredding
+      synonymes: [destruction cryptographique, destruction de la clé]
+      pourquoi: rendre les données illisibles jusque dans les sauvegardes
+      niveau: lead
+      concept: crypto-shredding
+    - mot: registre des traitements
+      synonymes: [registre, dpo]
+      pourquoi: savoir où sont les données, et qui s'en occupe
+      niveau: lead

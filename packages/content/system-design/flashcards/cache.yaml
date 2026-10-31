@@ -21,3 +21,64 @@
           synonymes: [durée de vie aléatoire, expiration aléatoire]
           pourquoi: les clés n'expirent pas toutes à la même seconde
           niveau: lead
+
+- id: pages-quasi-statiques
+  situation: 50 000 pages qui changent rarement doivent s'afficher en moins de 100 ms partout en Europe.
+  categorie: cache
+  arbre:
+    - mot: cdn
+      synonymes: [content delivery network]
+      pourquoi: servir depuis un point proche de l'utilisateur
+      niveau: confirme
+      concept: cdn
+      enfants:
+        - mot: génération statique
+          synonymes: [prégénération, statique, isr]
+          pourquoi: calculer la page une fois, pas à chaque visite
+          niveau: senior
+        - mot: purge par tag
+          synonymes: [purge, invalidation par tag]
+          pourquoi: invalider précisément les pages concernées par un changement
+          niveau: senior
+        - mot: stale-while-revalidate
+          synonymes: [servir le périmé]
+          pourquoi: servir l'ancienne version pendant la régénération
+          niveau: lead
+          concept: stale-while-revalidate
+
+- id: cinquante-requetes-pour-cinquante-dossiers
+  situation: L'affichage d'une liste de 50 dossiers déclenche 51 requêtes SQL.
+  categorie: cache
+  arbre:
+    - mot: n+1
+      synonymes: [n plus un, probleme n 1]
+      pourquoi: une requête par élément de la liste
+      niveau: confirme
+      concept: n-plus-un
+      enfants:
+        - mot: chargement anticipé
+          synonymes: [eager loading, jointure, fetch join]
+          pourquoi: tout charger en une ou deux requêtes
+          niveau: confirme
+        - mot: compteur de requêtes
+          synonymes: [détection automatique, profiler]
+          pourquoi: le détecter en CI avant la production
+          niveau: lead
+
+- id: page-en-cache-bloc-personnalise
+  situation: Une page est identique pour tous, sauf un petit bloc personnalisé, et on veut quand même la mettre en cache.
+  categorie: cache
+  arbre:
+    - mot: esi
+      synonymes: [edge side includes]
+      pourquoi: le cache assemble la page commune et le bloc personnalisé
+      niveau: senior
+      alternatives:
+        - mot: chargement côté client
+          synonymes: [ajax, fetch côté client]
+          condition: bloc non indispensable au premier affichage
+      enfants:
+        - mot: varnish
+          synonymes: [cache http, reverse proxy]
+          pourquoi: le cache HTTP qui interprète les ESI
+          niveau: lead

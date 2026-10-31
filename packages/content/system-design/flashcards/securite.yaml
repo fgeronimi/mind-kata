@@ -21,3 +21,151 @@
               synonymes: [gitleaks, détection de secrets]
               pourquoi: empêcher que cela se reproduise, dès la CI
               niveau: lead
+
+- id: photos-trop-lourdes
+  situation: Les utilisateurs envoient des photos de 20 Mo qui transitent par les serveurs d'application et les saturent.
+  categorie: securite
+  arbre:
+    - mot: url signée
+      synonymes: [signed url, envoi direct]
+      pourquoi: le navigateur envoie directement au stockage objet
+      niveau: senior
+      concept: url-signee
+      enfants:
+        - mot: redimensionnement asynchrone
+          synonymes: [asynchrone, worker]
+          pourquoi: produire les tailles utiles hors de la requête
+          niveau: senior
+        - mot: contrôle du type et de la taille
+          synonymes: [validation du fichier]
+          pourquoi: refuser ce qui n'est pas une image raisonnable
+          niveau: senior
+    - mot: cdn
+      synonymes: [webp, avif]
+      pourquoi: servir des formats légers, au plus près des utilisateurs
+      niveau: confirme
+      concept: cdn
+
+- id: fichier-avec-virus
+  situation: Un fichier déposé par un usager pourrait contenir un virus.
+  categorie: securite
+  arbre:
+    - mot: quarantaine
+      synonymes: [zone de quarantaine]
+      pourquoi: le fichier n'est pas utilisable avant d'être analysé
+      niveau: senior
+      enfants:
+        - mot: antivirus
+          synonymes: [clamav, analyse antivirale]
+          pourquoi: analyser chaque fichier reçu
+          niveau: confirme
+        - mot: désarmement du contenu
+          synonymes: [cdr, content disarm]
+          pourquoi: reconstruire un document propre plutôt que de seulement détecter
+          niveau: lead
+
+- id: numero-fiscal-affiche
+  situation: Le numéro fiscal complet de l'usager s'affiche dans plusieurs écrans et dans les journaux.
+  categorie: securite
+  arbre:
+    - mot: minimisation
+      synonymes: [rgpd, données nécessaires]
+      pourquoi: n'afficher et ne journaliser que le nécessaire
+      niveau: confirme
+      concept: masquage-des-donnees
+      enfants:
+        - mot: masquage
+          synonymes: [data masking, masquer]
+          pourquoi: afficher seulement les derniers chiffres
+          niveau: senior
+        - mot: logs sans données personnelles
+          synonymes: [ne pas journaliser]
+          pourquoi: les journaux sont copiés partout et conservés longtemps
+          niveau: senior
+          concept: logs-centralises
+
+- id: base-volee
+  situation: Si la base de données était volée, les données des usagers seraient lisibles en clair.
+  categorie: securite
+  arbre:
+    - mot: chiffrement au repos
+      synonymes: [chiffrement, chiffrer]
+      pourquoi: un vol du stockage ne livre que des données illisibles
+      niveau: confirme
+      concept: chiffrement
+      enfants:
+        - mot: par colonne
+          synonymes: [chiffrement par colonne]
+          pourquoi: protéger aussi contre un accès à la base elle-même
+          niveau: senior
+        - mot: kms
+          synonymes: [gestion des clés, service de clés]
+          pourquoi: les clés ne vivent jamais à côté des données
+          niveau: senior
+    - mot: chiffrement en transit
+      synonymes: [tls, hsts]
+      pourquoi: les données sont aussi protégées en chemin
+      niveau: confirme
+      concept: chiffrement
+
+- id: services-qui-se-font-confiance
+  situation: Les services internes s'appellent sans aucune authentification, puisqu'ils sont dans le même réseau.
+  categorie: securite
+  arbre:
+    - mot: zero trust
+      synonymes: [confiance zéro]
+      pourquoi: être dans le réseau interne ne donne aucun droit
+      niveau: senior
+      concept: mtls-zero-trust
+      enfants:
+        - mot: mtls
+          synonymes: [tls mutuel, certificats]
+          pourquoi: chaque service prouve son identité
+          niveau: senior
+        - mot: jeton de service
+          synonymes: [identité de service, compte de service]
+          pourquoi: des droits par service, au minimum nécessaire
+          niveau: lead
+
+- id: faille-dans-une-librairie
+  situation: Une faille critique est publiée dans une bibliothèque que vous utilisez peut-être.
+  categorie: securite
+  arbre:
+    - mot: analyse des dépendances
+      synonymes: [sca, composer audit, npm audit, dependabot, snyk]
+      pourquoi: savoir en minutes si l'on est concerné
+      niveau: confirme
+      concept: sca
+      enfants:
+        - mot: mise à jour automatisée
+          synonymes: [mises à jour automatiques]
+          pourquoi: corriger vite, sans chantier manuel
+          niveau: senior
+        - mot: délai de correction
+          synonymes: [politique de correction]
+          pourquoi: un délai fixé selon la gravité
+          niveau: lead
+
+- id: depart-d-un-salarie
+  situation: Un client veut que ses salariés se connectent avec leur compte d'entreprise, et que l'accès soit coupé à leur départ.
+  categorie: securite
+  arbre:
+    - mot: sso
+      synonymes: [authentification unique, saml, openid connect, oidc]
+      pourquoi: se connecter avec le compte de l'entreprise
+      niveau: confirme
+      concept: sso
+      enfants:
+        - mot: rôles depuis les groupes
+          synonymes: [groupes]
+          pourquoi: les droits suivent l'annuaire du client
+          niveau: senior
+    - mot: scim
+      pourquoi: les départs désactivent les comptes automatiquement
+      niveau: senior
+      concept: scim
+      enfants:
+        - mot: révocation des sessions
+          synonymes: [révoquer les sessions]
+          pourquoi: un compte désactivé ne doit plus avoir de session ouverte
+          niveau: lead

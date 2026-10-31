@@ -1,0 +1,141 @@
+- id: ecran-qui-appelle-six-services
+  situation: L'application mobile appelle six services différents pour afficher un seul écran, et elle est lente.
+  categorie: architecture
+  arbre:
+    - mot: bff
+      synonymes: [backend for frontend]
+      pourquoi: une API dédiée au mobile, qui agrège côté serveur
+      niveau: senior
+      concept: bff
+      enfants:
+        - mot: appels en parallèle
+          synonymes: [parallèle, en parallèle]
+          pourquoi: le temps de réponse devient celui du service le plus lent, pas la somme
+          niveau: senior
+        - mot: graphql
+          pourquoi: le client demande exactement les champs dont l'écran a besoin
+          niveau: lead
+
+- id: equipe-veut-des-microservices
+  situation: L'équipe veut passer aux microservices « parce que c'est moderne ».
+  categorie: architecture
+  arbre:
+    - mot: quel problème
+      synonymes: [quel besoin, pourquoi faire]
+      pourquoi: une architecture se justifie par un problème, pas par une mode
+      niveau: confirme
+      enfants:
+        - mot: monolithe modulaire
+          synonymes: [monolithe découpé, modules]
+          pourquoi: un déploiement, des frontières par domaine
+          niveau: senior
+          concept: monolithe-modulaire
+          enfants:
+            - mot: frontières vérifiées
+              synonymes: [deptrac, dependency cruiser, archunit]
+              pourquoi: une règle non vérifiée finit contournée
+              niveau: senior
+        - mot: monolithe distribué
+          pourquoi: le piège, des services qu'on ne peut pas déployer seuls
+          niveau: senior
+        - mot: loi de conway
+          synonymes: [conway]
+          pourquoi: l'architecture suit l'organisation des équipes
+          niveau: lead
+          concept: loi-de-conway
+        - mot: strangler fig
+          synonymes: [figuier étrangleur]
+          pourquoi: extraire un service progressivement, sur un signal concret
+          niveau: lead
+          concept: strangler-fig
+
+- id: reservation-puis-paiement
+  situation: On réserve une chambre, puis on débite le client. Si le paiement échoue, la chambre reste bloquée.
+  categorie: architecture
+  arbre:
+    - mot: saga
+      pourquoi: une suite d'étapes locales, sans transaction globale
+      niveau: senior
+      concept: saga
+      enfants:
+        - mot: compensation
+          synonymes: [annulation, action de compensation]
+          pourquoi: libérer la chambre si le paiement échoue
+          niveau: senior
+        - mot: orchestration
+          synonymes: [orchestrateur]
+          pourquoi: un coordinateur central, déroulé lisible
+          niveau: lead
+          alternatives:
+            - mot: chorégraphie
+              condition: peu d'étapes, services réagissant aux événements
+        - mot: idempotence
+          synonymes: [idempotent]
+          pourquoi: étapes et compensations sont réessayées
+          niveau: senior
+          concept: idempotence
+
+- id: lectures-et-ecritures-divergent
+  situation: Les écrans de recherche et de tableau de bord ont besoin de données très différentes de celles qu'on écrit.
+  categorie: architecture
+  arbre:
+    - mot: cqrs
+      synonymes: [séparation lecture écriture]
+      pourquoi: un modèle pour écrire, un autre pour lire
+      niveau: senior
+      concept: cqrs
+      enfants:
+        - mot: projections
+          synonymes: [projection, vue de lecture]
+          pourquoi: des modèles de lecture construits pour chaque écran
+          niveau: senior
+        - mot: cohérence à terme
+          synonymes: [eventual consistency]
+          pourquoi: le modèle de lecture suit l'écriture avec un délai
+          niveau: senior
+          concept: coherence-a-terme
+        - mot: event sourcing
+          pourquoi: seulement si l'historique complet est un besoin métier
+          niveau: lead
+          concept: event-sourcing
+
+- id: vieux-systeme-mal-concu
+  situation: Le nouveau service doit lire les données d'un vieux système au modèle confus, sans en hériter les défauts.
+  categorie: architecture
+  arbre:
+    - mot: couche anti-corruption
+      synonymes: [anti corruption layer, acl]
+      pourquoi: traduire le modèle externe à la frontière
+      niveau: senior
+      concept: anti-corruption-layer
+      enfants:
+        - mot: adapter
+          synonymes: [adaptateur]
+          pourquoi: le pattern de code qui l'implémente
+          niveau: senior
+          concept: adapter
+        - mot: strangler fig
+          synonymes: [figuier étrangleur]
+          pourquoi: remplacer ensuite l'ancien système progressivement
+          niveau: lead
+          concept: strangler-fig
+
+- id: classes-communes-entre-modules
+  situation: Deux modules veulent partager leurs entités métier pour éviter de dupliquer du code.
+  categorie: architecture
+  arbre:
+    - mot: noyau partagé
+      synonymes: [shared kernel]
+      pourquoi: partager seulement le strict minimum, petit et stable
+      niveau: senior
+      concept: shared-kernel
+      enfants:
+        - mot: identifiant
+          synonymes: [id, référence par identifiant]
+          pourquoi: entre modules, seul l'identifiant circule, pas l'entité
+          niveau: senior
+        - mot: objet valeur
+          synonymes: [value object]
+          pourquoi: ce qui se partage sans risque, immuable et sans identité
+          niveau: lead
+          concept: value-object

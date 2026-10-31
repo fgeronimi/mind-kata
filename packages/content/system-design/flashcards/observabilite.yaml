@@ -50,3 +50,47 @@
               pourquoi: alerter quand le budget se consomme trop vite
               niveau: lead
               concept: burn-rate
+
+- id: alertes-ignorees
+  situation: L'équipe reçoit 200 alertes par semaine et ne les regarde plus.
+  categorie: observabilite
+  arbre:
+    - mot: fatigue d'alerte
+      synonymes: [alert fatigue]
+      pourquoi: nommer le problème, la vraie panne passera inaperçue
+      niveau: senior
+      concept: fatigue-d-alerte
+      enfants:
+        - mot: actionnables
+          synonymes: [alertes actionnables]
+          pourquoi: chaque alerte appelle une action précise
+          niveau: senior
+        - mot: symptômes
+          synonymes: [ce que voit l'utilisateur]
+          pourquoi: alerter sur l'expérience utilisateur, pas sur chaque CPU
+          niveau: senior
+        - mot: burn rate
+          synonymes: [slo]
+          pourquoi: alerter quand l'objectif de service est menacé
+          niveau: lead
+          concept: burn-rate
+
+- id: logs-de-tous-les-serveurs
+  situation: Pour comprendre un incident, il faut aller lire les logs sur chacun des dix serveurs.
+  categorie: observabilite
+  arbre:
+    - mot: centralisation des logs
+      synonymes: [logs centralisés, elk, loki]
+      pourquoi: tous les journaux au même endroit, interrogeables
+      niveau: confirme
+      concept: logs-centralises
+      enfants:
+        - mot: logs structurés
+          synonymes: [json]
+          pourquoi: filtrer et agréger par champ
+          niveau: senior
+        - mot: identifiant de corrélation
+          synonymes: [correlation id, trace id]
+          pourquoi: suivre une requête d'un service à l'autre
+          niveau: senior
+          concept: tracing-distribue

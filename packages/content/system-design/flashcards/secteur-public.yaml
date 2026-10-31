@@ -1,0 +1,44 @@
+- id: preuve-en-cas-de-recours
+  situation: En cas de recours, l'administration doit prouver qui a modifié un dossier, et quand.
+  categorie: secteur-public
+  arbre:
+    - mot: journal d'audit
+      synonymes: [piste d'audit, audit]
+      pourquoi: tracer chaque action significative
+      niveau: confirme
+      concept: journal-d-audit
+      enfants:
+        - mot: ajout seul
+          synonymes: [append only]
+          pourquoi: rien ne s'y modifie ni ne s'y supprime
+          niveau: senior
+          enfants:
+            - mot: chaînage par hash
+              synonymes: [hash, chaînage]
+              pourquoi: toute altération devient détectable
+              niveau: lead
+
+- id: ouverture-d-un-service-public
+  situation: Un nouveau service public en ligne ouvre bientôt, avec des données sensibles et un public très large.
+  categorie: secteur-public
+  arbre:
+    - mot: hébergement souverain
+      synonymes: [secnumcloud, cloud de confiance]
+      pourquoi: les données sensibles chez un prestataire qualifié
+      niveau: senior
+      concept: hebergement-souverain
+    - mot: franceconnect
+      synonymes: [proconnect, identité numérique]
+      pourquoi: une identité déjà vérifiée, sans compte de plus
+      niveau: confirme
+      concept: identite-numerique-publique
+    - mot: accessibilité
+      synonymes: [rgaa, dsfr]
+      pourquoi: une obligation légale, pour tous les publics
+      niveau: confirme
+      concept: accessibilite-numerique
+    - mot: journal d'audit
+      synonymes: [audit]
+      pourquoi: la preuve en cas de recours
+      niveau: senior
+      concept: journal-d-audit

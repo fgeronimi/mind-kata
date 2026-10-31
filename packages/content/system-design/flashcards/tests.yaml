@@ -1,0 +1,63 @@
+- id: vieux-module-sans-tests
+  situation: Un vieux module critique, sans aucun test, doit être modifié.
+  categorie: tests
+  arbre:
+    - mot: tests de caractérisation
+      synonymes: [golden master]
+      pourquoi: figer le comportement actuel avant de toucher au code
+      niveau: senior
+      concept: tests-de-caracterisation
+      enfants:
+        - mot: couche anti-corruption
+          synonymes: [anti corruption layer]
+          pourquoi: isoler le vieux module du nouveau code
+          niveau: lead
+          concept: anti-corruption-layer
+        - mot: strangler fig
+          synonymes: [figuier étrangleur]
+          pourquoi: le remplacer morceau par morceau
+          niveau: lead
+          concept: strangler-fig
+    - mot: bus factor
+      synonymes: [binôme, pair programming]
+      pourquoi: une seule personne connaît ce module
+      niveau: lead
+      concept: bus-factor
+
+- id: tenir-cinquante-mille-utilisateurs
+  situation: Comment être sûr que le service tiendra 50 000 utilisateurs le jour de l'ouverture ?
+  categorie: tests
+  arbre:
+    - mot: test de charge
+      synonymes: [tests de charge, k6, gatling, jmeter]
+      pourquoi: mesurer avant, plutôt que découvrir le jour J
+      niveau: confirme
+      concept: tests-de-charge
+      enfants:
+        - mot: environnement proche de la production
+          synonymes: [préproduction]
+          pourquoi: des résultats représentatifs
+          niveau: senior
+        - mot: percentiles
+          synonymes: [p95, p99]
+          pourquoi: la moyenne cache les utilisateurs qui attendent
+          niveau: senior
+        - mot: simuler les tiers
+          synonymes: [wiremock, bouchons]
+          pourquoi: ne pas faire tomber les partenaires pendant le test
+          niveau: lead
+
+- id: vraie-base-pendant-les-tests
+  situation: Les tests passent avec des doublures, mais l'application casse en production sur une requête SQL.
+  categorie: tests
+  arbre:
+    - mot: testcontainers
+      synonymes: [base dans un conteneur, conteneurs de test]
+      pourquoi: tester contre une vraie base, jetable
+      niveau: senior
+      concept: testcontainers
+      enfants:
+        - mot: tests d'intégration
+          synonymes: [intégration]
+          pourquoi: le bon étage de la pyramide pour ce risque
+          niveau: senior
