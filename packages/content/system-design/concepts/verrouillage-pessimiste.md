@@ -7,7 +7,7 @@ liens: [verrouillage-optimiste]
 niveaux:
   confirme: "Sait qu'on peut bloquer une ligne pendant qu'on la modifie pour empêcher toute modification concurrente."
   senior: "L'utilise (SELECT … FOR UPDATE) quand les conflits sont fréquents ou coûteux, en gardant les transactions courtes."
-  lead: "Le réserve aux cas qui l'exigent, car il limite la concurrence et expose aux interblocages."
+  lead: "Fait choisir la stratégie de concurrence selon le coût métier d'un conflit, et vérifie qu'elle tient sous la charge réelle."
 ---
 
 On **bloque la ligne** le temps de la modification (`SELECT … FOR UPDATE`).

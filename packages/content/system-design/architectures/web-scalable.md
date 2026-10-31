@@ -8,7 +8,7 @@ briques:
   - conteneurs sans état
   - cache mémoire (objets, sessions)
   - base relationnelle et réplicas en lecture
-concepts: [rate-limiting, timeout]
+concepts: [rate-limiting, timeout, autoscaling, index, replicas-lecture, cdn]
 ---
 
 ```mermaid

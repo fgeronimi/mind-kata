@@ -5,7 +5,7 @@ alias: ["DORA"]
 categorie: organisation
 liens: [feature-flag, canary]
 niveaux:
-  confirme: "Connaît les quatre métriques DORA : fréquence de déploiement, délai, taux d'échec, temps de rétablissement."
+  confirme: "Connaît les quatre métriques DORA historiques : fréquence de déploiement, délai entre commit et production, taux d'échec des changements, temps de rétablissement."
   senior: "Les mesure dans la CI et les utilise pour repérer ce qui ralentit la livraison."
   lead: "S'en sert pour piloter l'amélioration de l'équipe, sans en faire un objectif individuel."
 ---

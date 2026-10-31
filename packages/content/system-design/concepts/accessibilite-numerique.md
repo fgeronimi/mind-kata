@@ -5,7 +5,7 @@ alias: ["RGAA", "DSFR", "WCAG"]
 categorie: secteur-public
 liens: []
 niveaux:
-  confirme: "Sait que les services publics numériques ont une obligation légale d'accessibilité, mesurée par un référentiel (RGAA en France)."
+  confirme: "Sait que l'accessibilité numérique est une obligation légale pour les services publics, mesurée par un référentiel (RGAA en France), et que depuis juin 2025 l'European Accessibility Act l'étend à de nombreux services privés."
   senior: "Conçoit accessible dès le départ (sémantique HTML, clavier, contrastes, lecteurs d'écran), s'appuie sur le système de design de l'État (DSFR) et fait auditer."
   lead: "Intègre l'accessibilité à la définition de « terminé » et publie la déclaration d'accessibilité exigée."
 ---

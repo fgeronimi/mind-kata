@@ -8,7 +8,17 @@ briques:
   - machine à états
   - webhooks et inbox
   - rapprochement quotidien
-concepts: [idempotence, saga, webhook, circuit-breaker, timeout, retry-backoff]
+concepts:
+  [
+    idempotence,
+    saga,
+    webhook,
+    circuit-breaker,
+    timeout,
+    retry-backoff,
+    comptabilite-partie-double,
+    machine-a-etats,
+  ]
 ---
 
 ```mermaid

@@ -6,7 +6,7 @@ categorie: messagerie
 liens: [idempotence, rate-limiting]
 niveaux:
   confirme: "Sait que d'une rafale de modifications sur le même objet, on n'envoie que la dernière version."
-  senior: "L'implémente (clé par objet, délai de regroupement, envoi de l'état complet) pour économiser les quotas d'un tiers."
+  senior: "L'implémente (clé par objet, délai de regroupement, envoi de l'état complet) pour réduire la charge, les coûts et la consommation des quotas d'un tiers."
   lead: "L'utilise pour maîtriser les coûts et les quotas des intégrations, en arbitrant le délai de fraîcheur acceptable."
 ---
 

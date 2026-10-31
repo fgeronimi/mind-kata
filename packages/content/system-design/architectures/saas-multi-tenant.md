@@ -7,7 +7,7 @@ briques:
   - sécurité au niveau des lignes ou schéma par client
   - base dédiée pour les très gros comptes
   - limites par offre
-concepts: [rate-limiting, bulkhead]
+concepts: [rate-limiting, bulkhead, multi-tenant, row-level-security]
 ---
 
 ```mermaid

@@ -7,7 +7,7 @@ liens: [scalabilite, spof]
 niveaux:
   confirme: "Sait qu'un load balancer répartit le trafic entre plusieurs instances et retire celles qui ne répondent plus."
   senior: "Choisit entre couche 4 (TCP) et couche 7 (HTTP : routage, terminaison TLS), configure les health checks et évite les sessions collantes."
-  lead: "Le double pour qu'il ne devienne pas lui-même un point unique de défaillance."
+  lead: "Choisit entre load balancer managé et auto-hébergé selon le coût d'exploitation, et le traite comme un composant critique, redondé et supervisé."
 ---
 
 Répartit le trafic et retire les instances qui échouent aux **health checks**.
