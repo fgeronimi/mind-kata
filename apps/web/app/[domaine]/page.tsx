@@ -14,9 +14,14 @@ export async function generateMetadata({
 }
 
 export default async function PageDomaine({ params }: PageProps<"/[domaine]">) {
-  const { domaine, concepts, guides, architectures } = trouverPack(
-    (await params).domaine,
-  );
+  const {
+    domaine,
+    concepts,
+    guides,
+    architectures,
+    simulations,
+    equivalences,
+  } = trouverPack((await params).domaine);
   const categories = domaine.categories
     .map((categorie) => ({
       ...categorie,
@@ -73,6 +78,27 @@ export default async function PageDomaine({ params }: PageProps<"/[domaine]">) {
         </>
       )}
 
+      {simulations.length > 0 && (
+        <>
+          <h2 className="mt-10 text-xl font-semibold">Simulations</h2>
+          <ul className="mt-4 space-y-3">
+            {simulations.map((s) => (
+              <li key={s.id}>
+                <Link
+                  href={`/${domaine.id}/simulations/${s.id}`}
+                  className="block rounded-lg border border-border p-4 hover:border-accent"
+                >
+                  <span className="font-semibold">{s.titre}</span>
+                  <p className="mt-1 line-clamp-2 text-sm text-muted">
+                    {s.enonce}
+                  </p>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+
       <h2 className="mt-10 text-xl font-semibold">Concepts</h2>
       <div className="mt-4 space-y-8">
         {categories.map((categorie) => (
@@ -98,6 +124,25 @@ export default async function PageDomaine({ params }: PageProps<"/[domaine]">) {
           </section>
         ))}
       </div>
+
+      {equivalences.length > 0 && (
+        <>
+          <h2 className="mt-10 text-xl font-semibold">Équivalences</h2>
+          <ul className="mt-4 space-y-3">
+            {equivalences.map((e) => (
+              <li key={e.id}>
+                <Link
+                  href={`/${domaine.id}/equivalences/${e.id}`}
+                  className="block rounded-lg border border-border p-4 hover:border-accent"
+                >
+                  <span className="font-semibold">{e.titre}</span>
+                  <p className="mt-1 text-sm text-muted">{e.description}</p>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
     </>
   );
 }

@@ -56,4 +56,4 @@ categories:
     libelle: Organisation
     description: Équipes, pilotage et conduite du changement.
 
-types: [concept, guide, architecture]
+types: [concept, guide, architecture, simulation, equivalences]

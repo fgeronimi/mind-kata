@@ -1,0 +1,132 @@
+titre: Frameworks back-end
+description: >-
+  Le même besoin dans trois frameworks. Raisonner en concepts, puis citer l'équivalent :
+  le pattern reste le même, seul l'outil change.
+colonnes:
+  - { id: symfony, libelle: Symfony }
+  - { id: laravel, libelle: Laravel }
+  - { id: nestjs, libelle: NestJS }
+lignes:
+  - besoin: Structure et injection de dépendances
+    valeurs:
+      {
+        symfony: "Container, services, bundles",
+        laravel: "Container, service providers",
+        nestjs: "Modules, providers",
+      }
+  - besoin: Routes et contrôleurs
+    valeurs:
+      {
+        symfony: "Attribut Route",
+        laravel: "routes/web.php, contrôleurs",
+        nestjs: "Décorateur @Controller",
+      }
+  - besoin: ORM
+    valeurs:
+      {
+        symfony: "Doctrine (Data Mapper)",
+        laravel: "Eloquent (Active Record)",
+        nestjs: "Prisma, TypeORM",
+      }
+  - besoin: Migrations
+    valeurs:
+      {
+        symfony: "Doctrine Migrations",
+        laravel: "Migrations Laravel",
+        nestjs: "Prisma Migrate",
+      }
+  - besoin: Validation
+    valeurs:
+      {
+        symfony: "Validator",
+        laravel: "Form Requests",
+        nestjs: "class-validator, Zod, pipes",
+      }
+  - besoin: Authentification
+    valeurs:
+      {
+        symfony: "Security, authenticators",
+        laravel: "Sanctum, Fortify, Socialite",
+        nestjs: "Passport.js, openid-client",
+      }
+  - besoin: Autorisations
+    valeurs:
+      { symfony: "Voters", laravel: "Gates, Policies", nestjs: "Guards, CASL" }
+  - besoin: File et asynchrone
+    valeurs:
+      { symfony: "Messenger", laravel: "Queues, Horizon", nestjs: "BullMQ" }
+  - besoin: Événements internes
+    valeurs:
+      {
+        symfony: "EventDispatcher",
+        laravel: "Events, Listeners",
+        nestjs: "@nestjs/event-emitter",
+      }
+  - besoin: Tâches planifiées
+    valeurs:
+      {
+        symfony: "Scheduler",
+        laravel: "Task scheduling",
+        nestjs: "@nestjs/schedule",
+      }
+  - besoin: Ligne de commande
+    valeurs:
+      { symfony: "Console", laravel: "Artisan", nestjs: "nest-commander" }
+  - besoin: Cache
+    valeurs:
+      { symfony: "Cache", laravel: "Façade Cache", nestjs: "cache-manager" }
+  - besoin: Limitation de débit
+    valeurs:
+      {
+        symfony: "RateLimiter",
+        laravel: "RateLimiter, middleware throttle",
+        nestjs: "@nestjs/throttler",
+      }
+  - besoin: Verrou distribué
+    valeurs: { symfony: "Lock", laravel: "Cache::lock", nestjs: "Redlock" }
+  - besoin: Machine à états
+    valeurs:
+      {
+        symfony: "Workflow",
+        laravel: "spatie/laravel-model-states",
+        nestjs: "XState",
+      }
+  - besoin: Client HTTP
+    valeurs:
+      {
+        symfony: "HttpClient",
+        laravel: "Façade Http",
+        nestjs: "HttpModule (axios)",
+      }
+  - besoin: E-mails et notifications
+    valeurs:
+      {
+        symfony: "Mailer, Notifier",
+        laravel: "Mail, Notifications",
+        nestjs: "nodemailer",
+      }
+  - besoin: API REST documentée
+    valeurs:
+      {
+        symfony: "API Platform",
+        laravel: "API Resources",
+        nestjs: "@nestjs/swagger",
+      }
+  - besoin: Feature flags
+    valeurs:
+      { symfony: "Unleash", laravel: "Pennant", nestjs: "Unleash, GrowthBook" }
+  - besoin: Analyse statique
+    valeurs:
+      {
+        symfony: "PHPStan",
+        laravel: "Larastan",
+        nestjs: "TypeScript strict, ESLint",
+      }
+  - besoin: Formatage
+    valeurs: { symfony: "PHP-CS-Fixer", laravel: "Pint", nestjs: "Prettier" }
+  - besoin: Tests
+    valeurs:
+      { symfony: "PHPUnit", laravel: "Pest, PHPUnit", nestjs: "Jest, Vitest" }
+notes:
+  - "Le problème N+1 existe partout : with() en Eloquent, include en Prisma, jointures en Doctrine."
+  - "L'outbox n'est native dans aucun des trois : elle se code."
