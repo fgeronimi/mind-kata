@@ -5,6 +5,7 @@ import { z } from "zod";
 import { type Architecture, schemaArchitecture } from "./architecture";
 import { type Concept, schemaConcept } from "./concept";
 import { type Domaine, schemaDomaine } from "./domaine";
+import { type Guide, schemaGuide } from "./guide";
 
 // Les erreurs de contenu sont lues par les rédacteurs : dans leur langue.
 z.config(z.locales.fr());
@@ -13,6 +14,7 @@ export interface Pack {
   domaine: Domaine;
   concepts: Concept[];
   architectures: Architecture[];
+  guides: Guide[];
 }
 
 // Toutes les erreurs d'un pack sont remontées d'un coup : corriger un fichier, relancer,
@@ -131,6 +133,9 @@ export function chargerPack(dossier: string): Pack {
     "architectures",
     schemaArchitecture,
   );
+  const guides: Guide[] = lireMarkdown("guide", "guides", schemaGuide).sort(
+    (a, b) => a.ordre - b.ordre,
+  );
 
   const idsConcepts = new Set(concepts.map((c) => c.id));
   const verifierLiens = (sousDossier: string, id: string, cibles: string[]) => {
@@ -146,5 +151,5 @@ export function chargerPack(dossier: string): Pack {
     verifierLiens("architectures", a.id, a.concepts);
 
   if (erreurs.length > 0) throw new ErreurDeContenu(erreurs);
-  return { domaine, concepts, architectures };
+  return { domaine, concepts, architectures, guides };
 }

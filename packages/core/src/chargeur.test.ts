@@ -14,7 +14,7 @@ niveaux:
   - { id: chef, libelle: Chef }
 categories:
   - { id: sauces, libelle: Sauces }
-types: [concept, architecture]
+types: [concept, architecture, guide]
 `;
 
 const concept = (id: string, liens: string[] = []) => `---
@@ -88,6 +88,19 @@ describe("chargerPack", () => {
     expect(pack.architectures[0]?.corps).toContain("```mermaid");
   });
 
+  it("trie les guides selon leur ordre", () => {
+    const guide = (id: string, ordre: number) =>
+      `---\nid: ${id}\ntitre: ${id}\nresume: Résumé.\nordre: ${String(ordre)}\n---\nCorps.\n`;
+    const pack = chargerPack(
+      ecrirePack({
+        "domaine.yaml": domaine,
+        "guides/service.md": guide("service", 2),
+        "guides/mise-en-place.md": guide("mise-en-place", 1),
+      }),
+    );
+    expect(pack.guides.map((g) => g.id)).toEqual(["mise-en-place", "service"]);
+  });
+
   it("accepte un pack sans dossier pour un type déclaré", () => {
     const pack = chargerPack(ecrirePack({ "domaine.yaml": domaine }));
     expect(pack.concepts).toEqual([]);
@@ -146,7 +159,7 @@ describe("chargerPack", () => {
     const erreurs = erreursDe(
       ecrirePack({
         "domaine.yaml": domaine.replace(
-          "types: [concept, architecture]",
+          "types: [concept, architecture, guide]",
           "types: [concept]",
         ),
         "architectures/brigade.md": brigade,

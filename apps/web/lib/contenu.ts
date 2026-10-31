@@ -25,3 +25,10 @@ export const trouverConcept = (domaine: string, concept: string) => {
   if (!trouve) notFound();
   return { pack, concept: trouve };
 };
+
+export const trouverGuide = (domaine: string, guide: string) => {
+  const pack = trouverPack(domaine);
+  const trouve = pack.guides.find((g) => g.id === guide);
+  if (!trouve) notFound();
+  return { pack, guide: trouve };
+};

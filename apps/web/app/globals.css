@@ -63,7 +63,8 @@ body {
     @apply bg-transparent p-0;
   }
   .markdown table {
-    @apply w-full border-collapse text-sm;
+    /* Les tableaux larges défilent seuls, au lieu de déborder de la page sur mobile. */
+    @apply block w-full border-collapse overflow-x-auto text-sm;
   }
   .markdown th,
   .markdown td {
