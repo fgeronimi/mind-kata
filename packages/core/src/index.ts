@@ -15,3 +15,5 @@ export {
   type NoeudParcouru,
   parcourir,
 } from "./score";
+export { normaliser } from "./normalisation";
+export { reperer } from "./rapprochement";
