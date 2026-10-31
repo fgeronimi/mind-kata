@@ -39,3 +39,17 @@ export const trouverArchitecture = (domaine: string, architecture: string) => {
   if (!trouve) notFound();
   return { pack, architecture: trouve };
 };
+
+export const trouverSimulation = (domaine: string, simulation: string) => {
+  const pack = trouverPack(domaine);
+  const trouve = pack.simulations.find((s) => s.id === simulation);
+  if (!trouve) notFound();
+  return { pack, simulation: trouve };
+};
+
+export const trouverEquivalences = (domaine: string, tableau: string) => {
+  const pack = trouverPack(domaine);
+  const trouve = pack.equivalences.find((e) => e.id === tableau);
+  if (!trouve) notFound();
+  return { pack, equivalences: trouve };
+};

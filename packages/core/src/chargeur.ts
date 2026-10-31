@@ -5,7 +5,9 @@ import { z } from "zod";
 import { type Architecture, schemaArchitecture } from "./architecture";
 import { type Concept, schemaConcept } from "./concept";
 import { type Domaine, schemaDomaine } from "./domaine";
+import { type Equivalences, schemaEquivalences } from "./equivalences";
 import { type Guide, schemaGuide } from "./guide";
+import { type Simulation, schemaSimulation } from "./simulation";
 
 // Les erreurs de contenu sont lues par les rédacteurs : dans leur langue.
 z.config(z.locales.fr());
@@ -15,6 +17,8 @@ export interface Pack {
   concepts: Concept[];
   architectures: Architecture[];
   guides: Guide[];
+  simulations: Simulation[];
+  equivalences: Equivalences[];
 }
 
 // Toutes les erreurs d'un pack sont remontées d'un coup : corriger un fichier, relancer,
@@ -79,19 +83,26 @@ export function chargerPack(dossier: string): Pack {
   // Sans domaine valide, impossible de valider le reste : les schémas en dépendent.
   if (!domaine) throw new ErreurDeContenu(erreurs);
 
+  // Le dossier d'un type de contenu, s'il existe et si le domaine déclare ce type.
+  const repertoireDuType = (type: string, sousDossier: string) => {
+    const repertoire = path.join(dossier, sousDossier);
+    if (!existsSync(repertoire)) return undefined;
+    if (!(domaine.types as readonly string[]).includes(type)) {
+      erreurs.push(
+        `${relatif(repertoire)} : le domaine ne déclare pas le type « ${type} » dans domaine.yaml`,
+      );
+      return undefined;
+    }
+    return repertoire;
+  };
+
   const lireMarkdown = <S extends z.ZodType<{ id: string }>>(
     type: string,
     sousDossier: string,
     schema: S,
   ) => {
-    const repertoire = path.join(dossier, sousDossier);
-    if (!existsSync(repertoire)) return [];
-    if (!(domaine.types as readonly string[]).includes(type)) {
-      erreurs.push(
-        `${relatif(repertoire)} : le domaine ne déclare pas le type « ${type} » dans domaine.yaml`,
-      );
-      return [];
-    }
+    const repertoire = repertoireDuType(type, sousDossier);
+    if (!repertoire) return [];
 
     const elements: (z.infer<S> & { corps: string })[] = [];
     for (const nom of readdirSync(repertoire)
@@ -136,6 +147,33 @@ export function chargerPack(dossier: string): Pack {
   const guides: Guide[] = lireMarkdown("guide", "guides", schemaGuide).sort(
     (a, b) => a.ordre - b.ordre,
   );
+  const simulations: Simulation[] = lireMarkdown(
+    "simulation",
+    "simulations",
+    schemaSimulation(domaine),
+  );
+
+  // Les tableaux d'équivalences sont des fichiers YAML entiers : l'identifiant est le
+  // nom du fichier.
+  const equivalences: Equivalences[] = [];
+  const repertoireEquivalences = repertoireDuType(
+    "equivalences",
+    "equivalences",
+  );
+  if (repertoireEquivalences) {
+    for (const nom of readdirSync(repertoireEquivalences)
+      .filter((n) => n.endsWith(".yaml"))
+      .sort()) {
+      const fichier = path.join(repertoireEquivalences, nom);
+      const donnee = valider(
+        schemaEquivalences,
+        lireYaml(fichier, readFileSync(fichier, "utf8")),
+        fichier,
+      );
+      if (donnee)
+        equivalences.push({ ...donnee, id: path.basename(nom, ".yaml") });
+    }
+  }
 
   const idsConcepts = new Set(concepts.map((c) => c.id));
   const verifierLiens = (sousDossier: string, id: string, cibles: string[]) => {
@@ -149,7 +187,16 @@ export function chargerPack(dossier: string): Pack {
   for (const c of concepts) verifierLiens("concepts", c.id, c.liens);
   for (const a of architectures)
     verifierLiens("architectures", a.id, a.concepts);
+  for (const sim of simulations)
+    verifierLiens("simulations", sim.id, sim.concepts);
 
   if (erreurs.length > 0) throw new ErreurDeContenu(erreurs);
-  return { domaine, concepts, architectures, guides };
+  return {
+    domaine,
+    concepts,
+    architectures,
+    guides,
+    simulations,
+    equivalences,
+  };
 }

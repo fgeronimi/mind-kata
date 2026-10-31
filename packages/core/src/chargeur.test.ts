@@ -14,7 +14,7 @@ niveaux:
   - { id: chef, libelle: Chef }
 categories:
   - { id: sauces, libelle: Sauces }
-types: [concept, architecture, guide]
+types: [concept, architecture, guide, simulation, equivalences]
 `;
 
 const concept = (id: string, liens: string[] = []) => `---
@@ -101,6 +101,47 @@ describe("chargerPack", () => {
     expect(pack.guides.map((g) => g.id)).toEqual(["mise-en-place", "service"]);
   });
 
+  it("lit les tableaux d'équivalences et leur donne le nom du fichier pour id", () => {
+    const pack = chargerPack(
+      ecrirePack({
+        "domaine.yaml": domaine,
+        "equivalences/couteaux.yaml": [
+          "titre: Couteaux",
+          "description: Le bon couteau selon le geste.",
+          "colonnes: [{ id: fr, libelle: France }, { id: jp, libelle: Japon }]",
+          "lignes: [{ besoin: Émincer, valeurs: { fr: Chef, jp: Gyuto } }]",
+        ].join("\n"),
+      }),
+    );
+    expect(pack.equivalences[0]?.id).toBe("couteaux");
+  });
+
+  it("vérifie les concepts cités par une simulation", () => {
+    const simulation = [
+      "---",
+      "id: coup-de-feu",
+      "titre: Coup de feu",
+      "enonce: Cent couverts.",
+      "chiffres: [{ libelle: Couverts, valeur: '100' }]",
+      "recap: Deux par minute.",
+      "relances: [Et ensuite ?]",
+      "grille: { commis: [Tient son poste.], chef: [Simplifie la carte.] }",
+      "concepts: [roux]",
+      "---",
+      "Réponse modèle.",
+    ].join("\n");
+    expect(
+      erreursDe(
+        ecrirePack({
+          "domaine.yaml": domaine,
+          "simulations/coup-de-feu.md": simulation,
+        }),
+      ),
+    ).toEqual([
+      "cuisine/simulations/coup-de-feu.md : lien vers le concept inconnu « roux »",
+    ]);
+  });
+
   it("accepte un pack sans dossier pour un type déclaré", () => {
     const pack = chargerPack(ecrirePack({ "domaine.yaml": domaine }));
     expect(pack.concepts).toEqual([]);
@@ -159,7 +200,7 @@ describe("chargerPack", () => {
     const erreurs = erreursDe(
       ecrirePack({
         "domaine.yaml": domaine.replace(
-          "types: [concept, architecture, guide]",
+          "types: [concept, architecture, guide, simulation, equivalences]",
           "types: [concept]",
         ),
         "architectures/brigade.md": brigade,
