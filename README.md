@@ -60,7 +60,7 @@ suivants.
 ```
 apps/web/          Next.js (App Router) : pages, route handlers, server actions
 packages/content/  packs de domaine en Markdown + YAML, source de vérité
-packages/core/     schémas Zod, chargeur de pack, puis score des arbres (lot 2)
+packages/core/     schémas Zod, chargeur de pack, score et rapprochement des réponses
 infra/             préparation du projet GCP, puis Terraform (lot 3)
 docs/adr/          notes de décision
 ```
@@ -75,7 +75,7 @@ docs/adr/          notes de décision
 | Schémas     | Mermaid, dessiné à la demande                 | Schémas en texte, relus en PR ; la bibliothèque n'est chargée que sur les pages qui en contiennent                                                 |
 | Hébergement | Cloud Run, `europe-west1`                     | Conteneur à zéro instance au repos, cible définitive dès le départ ([ADR 0002](docs/adr/0002-premier-jalon-et-infrastructure-progressive.md))      |
 | Déploiement | GitHub Actions + Workload Identity Federation | Aucune clé de compte de service stockée ([ADR 0006](docs/adr/0006-deploiement-sans-cle-par-workload-identity-federation.md))                       |
-| Qualité     | ESLint, Prettier, Vitest, Playwright          | Même `make check` en local et en CI                                                                                                                |
+| Qualité     | ESLint, Prettier, Vitest, Playwright          | Même `make check` en local et en CI ; parcours joués dans un vrai navigateur, contre le serveur de production                                      |
 | Monorepo    | pnpm workspaces                               | Logique partagée entre application et workers, un seul lockfile                                                                                    |
 
 ## Avancement
@@ -84,19 +84,21 @@ docs/adr/          notes de décision
 | -------------------------- | --------------------------------------------------------------------------- | ---- |
 | 0. Socle                   | Monorepo, outillage, CI, image Docker, déploiement continu sans clé         | ✅   |
 | 1. Contenu et fiches       | Pack system design, schémas Zod, pages concepts, architectures, simulations | ✅   |
-| 2. Exercices en arbre      | Tirage, réponse, révélation de l'arbre, score par couches                   | ⏳   |
-| 3. Back-end et progression | Comptes, progression sauvegardée, répétition espacée, Terraform             | —    |
+| 2. Exercices en arbre      | Tirage, réponse, révélation de l'arbre, score par couches                   | ✅   |
+| 3. Back-end et progression | Comptes, progression sauvegardée, répétition espacée, Terraform             | ⏳   |
 | 4. Coach IA                | Simulation conversationnelle, relances, débrief selon la grille             | —    |
 | 5. Contributions           | Proposition → PR → review IA → validation humaine                           | —    |
 | 6. Ingestion de documents  | Document déposé → propositions de contenu à valider                         | —    |
 | 7. Mode évaluation         | Après cadrage juridique (AI Act, RGPD)                                      | —    |
 
-Le premier jalon (lots 0 à 2) livre un site utilisable sans base ni API.
+**Premier jalon atteint** (lots 0 à 2) : un site utilisable sans base ni API, avec des
+exercices jouables de bout en bout.
 
-**Contenu du pack system design** : 94 concepts déclinés sur trois niveaux, 15
-architectures types avec leur schéma, 8 guides (méthode, ordres de grandeur, arbitrages…),
-une simulation d'entretien et un tableau d'équivalences entre frameworks. Les attentes
-par niveau sont en cours de relecture.
+**Contenu du pack system design** : 107 concepts déclinés sur trois niveaux, 62
+exercices éclair en arbre, 15 architectures types avec leur schéma, 8 guides (méthode,
+ordres de grandeur, arbitrages…), une simulation d'entretien et un tableau
+d'équivalences entre frameworks. Les attentes par niveau et les arbres sont en cours de
+relecture.
 
 ## Lancer en local
 
@@ -106,6 +108,7 @@ Prérequis : Node.js 26 et pnpm 11 (version figée dans `packageManager`).
 make install    # dépendances
 make dev        # http://localhost:3000
 make check      # formatage, lint, types, tests — ce que vérifie la CI
+make build && make test-e2e    # parcours Playwright contre le serveur de production
 make help       # toutes les cibles
 ```
 
@@ -127,6 +130,7 @@ options envisagées, décision, conséquences.
 5. [Score déterministe, IA pour les relances](docs/adr/0005-score-deterministe-ia-pour-les-relances.md)
 6. [Déploiement sans clé, par Workload Identity Federation](docs/adr/0006-deploiement-sans-cle-par-workload-identity-federation.md)
 7. [Contenu validé et rendu au build](docs/adr/0007-contenu-valide-et-rendu-au-build.md)
+8. [Rapprochement lexical des réponses, avant l'IA](docs/adr/0008-rapprochement-lexical-avant-l-ia.md)
 
 ## Licences
 
