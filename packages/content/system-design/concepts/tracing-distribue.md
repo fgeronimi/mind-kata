@@ -3,7 +3,7 @@ id: tracing-distribue
 terme: Tracing distribué
 alias: [distributed tracing, trace]
 categorie: observabilite
-liens: [timeout]
+liens: [timeout, logs-centralises, sli-slo-sla]
 niveaux:
   confirme: Sait qu'un identifiant de trace suit une requête à travers tous les services, pour retrouver où le temps est passé.
   senior: Instrumente avec OpenTelemetry, propage le contexte dans les appels HTTP et les messages, et relie traces, logs et métriques par le même identifiant.
