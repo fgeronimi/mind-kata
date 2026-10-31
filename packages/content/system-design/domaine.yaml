@@ -55,5 +55,8 @@ categories:
   - id: organisation
     libelle: Organisation
     description: Équipes, pilotage et conduite du changement.
+  - id: secteur-public
+    libelle: Secteur public
+    description: Les exigences propres aux services publics numériques.
 
 types: [concept, guide]
