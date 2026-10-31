@@ -59,31 +59,32 @@ suivants.
 
 ```
 apps/web/          Next.js (App Router) : pages, route handlers, server actions
-packages/content/  packs de domaine en Markdown + YAML, source de vérité (lot 1)
-packages/core/     logique métier : score des arbres, domaines (lot 1)
+packages/content/  packs de domaine en Markdown + YAML, source de vérité
+packages/core/     schémas Zod, chargeur de pack, puis score des arbres (lot 2)
 infra/             préparation du projet GCP, puis Terraform (lot 3)
 docs/adr/          notes de décision
 ```
 
 ## Stack et pourquoi
 
-| Brique      | Choix                                         | Pourquoi                                                                                                                                      |
-| ----------- | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| Application | Next.js 16, App Router, TypeScript strict     | Un seul framework pour le statique, le serveur et le streaming ([ADR 0001](docs/adr/0001-nextjs-seul.md))                                     |
-| Style       | Tailwind CSS 4                                | Standard de l'écosystème, sans couche CSS à maintenir                                                                                         |
-| Contenu     | Markdown + YAML validés par Zod               | Versionné, relu en PR, validé en CI ([ADR 0003](docs/adr/0003-contenu-dans-git.md))                                                           |
-| Hébergement | Cloud Run, `europe-west1`                     | Conteneur à zéro instance au repos, cible définitive dès le départ ([ADR 0002](docs/adr/0002-premier-jalon-et-infrastructure-progressive.md)) |
-| Déploiement | GitHub Actions + Workload Identity Federation | Aucune clé de compte de service stockée ([ADR 0006](docs/adr/0006-deploiement-sans-cle-par-workload-identity-federation.md))                  |
-| Qualité     | ESLint, Prettier, Vitest, Playwright          | Même `make check` en local et en CI                                                                                                           |
-| Monorepo    | pnpm workspaces                               | Logique partagée entre application et workers, un seul lockfile                                                                               |
+| Brique      | Choix                                         | Pourquoi                                                                                                                                           |
+| ----------- | --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Application | Next.js 16, App Router, TypeScript strict     | Un seul framework pour le statique, le serveur et le streaming ([ADR 0001](docs/adr/0001-nextjs-seul.md))                                          |
+| Style       | Tailwind CSS 4                                | Standard de l'écosystème, sans couche CSS à maintenir                                                                                              |
+| Contenu     | Markdown + YAML validés par Zod               | Versionné, relu en PR, validé en CI ([ADR 0003](docs/adr/0003-contenu-dans-git.md), [ADR 0007](docs/adr/0007-contenu-valide-et-rendu-au-build.md)) |
+| Schémas     | Mermaid, dessiné à la demande                 | Schémas en texte, relus en PR ; la bibliothèque n'est chargée que sur les pages qui en contiennent                                                 |
+| Hébergement | Cloud Run, `europe-west1`                     | Conteneur à zéro instance au repos, cible définitive dès le départ ([ADR 0002](docs/adr/0002-premier-jalon-et-infrastructure-progressive.md))      |
+| Déploiement | GitHub Actions + Workload Identity Federation | Aucune clé de compte de service stockée ([ADR 0006](docs/adr/0006-deploiement-sans-cle-par-workload-identity-federation.md))                       |
+| Qualité     | ESLint, Prettier, Vitest, Playwright          | Même `make check` en local et en CI                                                                                                                |
+| Monorepo    | pnpm workspaces                               | Logique partagée entre application et workers, un seul lockfile                                                                                    |
 
 ## Avancement
 
 | Lot                        | Contenu                                                                     | État |
 | -------------------------- | --------------------------------------------------------------------------- | ---- |
 | 0. Socle                   | Monorepo, outillage, CI, image Docker, déploiement continu sans clé         | ✅   |
-| 1. Contenu et fiches       | Pack system design, schémas Zod, pages concepts, architectures, simulations | ⏳   |
-| 2. Exercices en arbre      | Tirage, réponse, révélation de l'arbre, score par couches                   | —    |
+| 1. Contenu et fiches       | Pack system design, schémas Zod, pages concepts, architectures, simulations | ✅   |
+| 2. Exercices en arbre      | Tirage, réponse, révélation de l'arbre, score par couches                   | ⏳   |
 | 3. Back-end et progression | Comptes, progression sauvegardée, répétition espacée, Terraform             | —    |
 | 4. Coach IA                | Simulation conversationnelle, relances, débrief selon la grille             | —    |
 | 5. Contributions           | Proposition → PR → review IA → validation humaine                           | —    |
@@ -91,6 +92,11 @@ docs/adr/          notes de décision
 | 7. Mode évaluation         | Après cadrage juridique (AI Act, RGPD)                                      | —    |
 
 Le premier jalon (lots 0 à 2) livre un site utilisable sans base ni API.
+
+**Contenu du pack system design** : 94 concepts déclinés sur trois niveaux, 15
+architectures types avec leur schéma, 8 guides (méthode, ordres de grandeur, arbitrages…),
+une simulation d'entretien et un tableau d'équivalences entre frameworks. Les attentes
+par niveau sont en cours de relecture.
 
 ## Lancer en local
 
@@ -120,6 +126,7 @@ options envisagées, décision, conséquences.
 4. [Moteur générique, domaines en packs](docs/adr/0004-moteur-generique-packs-de-domaine.md)
 5. [Score déterministe, IA pour les relances](docs/adr/0005-score-deterministe-ia-pour-les-relances.md)
 6. [Déploiement sans clé, par Workload Identity Federation](docs/adr/0006-deploiement-sans-cle-par-workload-identity-federation.md)
+7. [Contenu validé et rendu au build](docs/adr/0007-contenu-valide-et-rendu-au-build.md)
 
 ## Licences
 

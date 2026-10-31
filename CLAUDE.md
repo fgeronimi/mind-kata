@@ -7,7 +7,8 @@ Dépôt **public**, vitrine pro : chaque choix doit être lisible par un recrute
 
 ## État d'avancement
 
-Lot en cours : **1 — Contenu et fiches**. Lot 0 (socle) terminé le 2026-10-31. Mettre cette ligne à jour à chaque fin de lot.
+Lot en cours : **2 — Exercices en arbre**. Lots 0 (socle) et 1 (contenu et fiches)
+terminés le 2026-10-31. Mettre cette ligne à jour à chaque fin de lot.
 
 ## Commandes
 
