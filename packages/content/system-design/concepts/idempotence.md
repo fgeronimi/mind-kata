@@ -3,7 +3,7 @@ id: idempotence
 terme: Idempotence
 alias: [clé d'idempotence, idempotency key]
 categorie: messagerie
-liens: [outbox, retry-backoff, webhook, saga]
+liens: [outbox, inbox, retry-backoff, webhook, saga, ordre-des-messages]
 niveaux:
   confirme: Sait qu'exécuter deux fois une opération idempotente donne le même résultat qu'une fois, et cite la clé d'idempotence face à un double envoi.
   senior: L'implémente (clé fournie par le client, table avec contrainte d'unicité, réponse rejouée) et sait où elle est indispensable — paiements, consommateurs de messages, webhooks reçus.

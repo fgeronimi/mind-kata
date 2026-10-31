@@ -3,7 +3,7 @@ id: outbox
 terme: Outbox
 alias: [transactional outbox, boîte d'envoi]
 categorie: messagerie
-liens: [idempotence, cdc, saga]
+liens: [idempotence, inbox, cdc, saga, pub-sub]
 niveaux:
   confirme: Sait que l'outbox évite de perdre un événement quand l'application plante entre l'écriture en base et la publication sur le bus.
   senior: L'implémente (table outbox écrite dans la même transaction, worker qui publie et marque comme publié) et sait que les consommateurs doivent alors être idempotents.
