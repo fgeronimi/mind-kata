@@ -1,0 +1,36 @@
+- id: projet-en-retard
+  situation: Le projet a deux mois de retard, et la direction propose d'ajouter quatre développeurs.
+  categorie: organisation
+  arbre:
+    - mot: loi de brooks
+      synonymes: [brooks]
+      pourquoi: ajouter des personnes à un projet en retard le retarde encore
+      niveau: senior
+      concept: lois-de-brooks-et-amdahl
+      enfants:
+        - mot: réduire le périmètre
+          synonymes: [périmètre, prioriser]
+          pourquoi: livrer l'essentiel plutôt que tout en retard
+          niveau: lead
+        - mot: découpage en lots
+          synonymes: [lots, mvp]
+          pourquoi: livrer de la valeur plus tôt
+          niveau: lead
+
+- id: estimer-une-inconnue
+  situation: L'équipe ne sait pas si une bibliothèque tiendra la charge, et doit pourtant estimer la fonctionnalité.
+  categorie: organisation
+  arbre:
+    - mot: spike
+      synonymes: [exploration, preuve de concept]
+      pourquoi: lever l'inconnue avant d'estimer
+      niveau: senior
+      concept: spike
+      enfants:
+        - mot: limité dans le temps
+          synonymes: [timebox, durée limitée]
+          pourquoi: une exploration qui ne s'éternise pas
+          niveau: senior
+        - mot: question précise
+          pourquoi: le livrable est une réponse, pas du code de production
+          niveau: lead

@@ -1,0 +1,105 @@
+- id: tout-sur-une-machine
+  situation: Toute l'application tourne sur une seule machine. Si elle tombe, tout tombe.
+  categorie: infrastructure
+  arbre:
+    - mot: point unique de défaillance
+      synonymes: [spof, single point of failure]
+      pourquoi: nommer le risque avant de le traiter
+      niveau: confirme
+      concept: spof
+      enfants:
+        - mot: plusieurs instances
+          synonymes: [redondance, multi zones, plusieurs zones]
+          pourquoi: une panne d'instance ou de zone n'arrête pas le service
+          niveau: confirme
+          enfants:
+            - mot: load balancer
+              synonymes: [répartiteur de charge]
+              pourquoi: répartir et retirer les instances en panne
+              niveau: confirme
+              concept: load-balancer
+              enfants:
+                - mot: health checks
+                  synonymes: [health check, sonde de santé]
+                  pourquoi: détecter une instance qui ne répond plus
+                  niveau: senior
+            - mot: sans état
+              synonymes: [stateless]
+              pourquoi: n'importe quelle instance peut répondre
+              niveau: senior
+              concept: sans-etat
+        - mot: rto
+          synonymes: [rpo, rto rpo]
+          pourquoi: chiffrer le temps de reprise et la perte de données acceptables
+          niveau: lead
+          concept: rto-rpo
+
+- id: session-perdue-entre-serveurs
+  situation: Depuis qu'il y a deux serveurs, les utilisateurs sont déconnectés au hasard.
+  categorie: infrastructure
+  arbre:
+    - mot: sans état
+      synonymes: [stateless]
+      pourquoi: la session ne doit pas vivre sur un serveur
+      niveau: confirme
+      concept: sans-etat
+      enfants:
+        - mot: session partagée
+          synonymes: [redis, cache partagé, session dans redis]
+          pourquoi: tous les serveurs lisent la même session
+          niveau: senior
+          alternatives:
+            - mot: jeton
+              synonymes: [jwt, token]
+              condition: session portée par le client, sans stockage serveur
+        - mot: sessions collantes
+          synonymes: [sticky sessions, affinité]
+          pourquoi: le contournement à éviter, il empêche de scaler proprement
+          niveau: lead
+
+- id: avis-en-temps-reel
+  situation: Les nouveaux avis clients doivent apparaître en direct dans le tableau de bord, sans recharger.
+  categorie: infrastructure
+  arbre:
+    - mot: sse
+      synonymes: [server sent events, eventsource]
+      pourquoi: le serveur pousse vers le navigateur, dans un seul sens
+      niveau: senior
+      concept: sse-websocket
+      alternatives:
+        - mot: websocket
+          condition: échange dans les deux sens
+      enfants:
+        - mot: pub sub
+          synonymes: [pubsub, redis pub sub]
+          pourquoi: relier les connexions ouvertes sur plusieurs serveurs
+          niveau: senior
+          concept: pub-sub
+        - mot: reconnexion
+          pourquoi: rattraper ce qui a été manqué pendant une coupure
+          niveau: lead
+    - mot: rafraîchissement périodique
+      synonymes: [polling]
+      pourquoi: suffit souvent, plus simple que le temps réel
+      niveau: lead
+      concept: polling-push
+
+- id: une-tache-une-seule-fois
+  situation: Une tâche planifiée tourne sur chacune des quatre instances, et les clients reçoivent quatre e-mails.
+  categorie: infrastructure
+  arbre:
+    - mot: verrou distribué
+      synonymes: [lock, verrou]
+      pourquoi: une seule instance exécute la tâche
+      niveau: senior
+      concept: verrou-distribue
+      enfants:
+        - mot: expiration
+          synonymes: [ttl, durée de vie]
+          pourquoi: une instance qui plante ne garde pas le verrou à jamais
+          niveau: senior
+    - mot: idempotence
+      synonymes: [idempotent]
+      pourquoi: envoyer deux fois ne doit pas produire deux e-mails
+      niveau: lead
+      concept: idempotence

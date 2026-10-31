@@ -111,3 +111,210 @@
           pourquoi: la publication peut avoir lieu deux fois
           niveau: senior
           concept: idempotence
+
+- id: rafale-de-modifications
+  situation: Une même fiche est modifiée vingt fois en une minute, et chaque modification part chez un partenaire au quota limité.
+  categorie: messagerie
+  arbre:
+    - mot: coalescence
+      synonymes: [fusion, regroupement]
+      pourquoi: n'envoyer que la dernière version
+      niveau: senior
+      concept: coalescence
+      enfants:
+        - mot: état complet
+          pourquoi: la dernière version suffit si on envoie l'état, pas un delta
+          niveau: senior
+        - mot: délai de regroupement
+          synonymes: [fenêtre de regroupement, debounce]
+          pourquoi: attendre un peu avant d'envoyer, au prix de la fraîcheur
+          niveau: lead
+
+- id: masse-contre-urgence
+  situation: Un import de masse occupe tous les workers, et une demande urgente d'un client attend une heure.
+  categorie: messagerie
+  arbre:
+    - mot: files séparées
+      synonymes: [files prioritaires, plusieurs files, file par priorité]
+      pourquoi: l'urgence ne passe jamais derrière la masse
+      niveau: senior
+      enfants:
+        - mot: bulkhead
+          synonymes: [cloison étanche, workers séparés]
+          pourquoi: des workers réservés pour chaque file
+          niveau: senior
+          concept: bulkhead
+        - mot: équité entre clients
+          synonymes: [quota par client]
+          pourquoi: un client ne monopolise pas la capacité
+          niveau: lead
+
+- id: evenements-dans-le-desordre
+  situation: Les mises à jour d'un même magasin arrivent dans le désordre, et l'ancienne valeur écrase la nouvelle.
+  categorie: messagerie
+  arbre:
+    - mot: clé de partition
+      synonymes: [ordering key, partition]
+      pourquoi: les messages d'une même entité restent ordonnés
+      niveau: senior
+      concept: ordre-des-messages
+      enfants:
+        - mot: numéro de version
+          synonymes: [version, numéro de séquence]
+          pourquoi: ignorer un message plus ancien que l'état connu
+          niveau: senior
+    - mot: au moins une fois
+      synonymes: [at least once]
+      pourquoi: l'ordre n'est pas l'idempotence, les doublons restent possibles
+      niveau: lead
+      concept: idempotence
+
+- id: message-en-echec-repete
+  situation: Un message plante à chaque tentative et bloque la file depuis ce matin.
+  categorie: messagerie
+  arbre:
+    - mot: file des messages en échec
+      synonymes: [dlq, dead letter queue, file d'échecs]
+      pourquoi: mettre de côté le message sans bloquer les suivants
+      niveau: confirme
+      concept: dlq
+      enfants:
+        - mot: nombre de tentatives
+          synonymes: [limite de tentatives]
+          pourquoi: décider quand un échec n'est plus passager
+          niveau: senior
+        - mot: alerte
+          pourquoi: un message en échec est un incident à traiter
+          niveau: senior
+        - mot: rejeu
+          synonymes: [rejouer]
+          pourquoi: renvoyer le message une fois la cause corrigée
+          niveau: lead
+
+- id: prevenir-des-clients-souvent-en-panne
+  situation: Il faut prévenir les systèmes de nos clients à chaque événement, mais leurs serveurs sont souvent indisponibles.
+  categorie: messagerie
+  arbre:
+    - mot: webhooks
+      synonymes: [webhook]
+      pourquoi: appeler l'URL du client à chaque événement
+      niveau: confirme
+      concept: webhook
+      enfants:
+        - mot: file par client
+          synonymes: [bulkhead]
+          pourquoi: un client en panne ne bloque pas les autres
+          niveau: senior
+          concept: bulkhead
+        - mot: retry
+          synonymes: [backoff, nouvelle tentative]
+          pourquoi: les pannes sont souvent passagères
+          niveau: confirme
+          concept: retry-backoff
+        - mot: signature hmac
+          synonymes: [hmac, signature]
+          pourquoi: le client vérifie que l'appel vient bien de nous
+          niveau: senior
+          concept: hmac
+        - mot: rejeu manuel
+          synonymes: [rejouer, renvoyer]
+          pourquoi: le client relance ce qu'il a manqué
+          niveau: lead
+
+- id: notifications-sans-doublon
+  situation: 500 000 notifications doivent partir pour une campagne, sans qu'aucun utilisateur ne la reçoive deux fois.
+  categorie: messagerie
+  arbre:
+    - mot: clé d'idempotence
+      synonymes: [idempotence, idempotency key]
+      pourquoi: campagne et utilisateur forment une clé unique
+      niveau: senior
+      concept: idempotence
+      enfants:
+        - mot: contrainte d'unicité
+          synonymes: [index unique]
+          pourquoi: la base refuse un second envoi
+          niveau: senior
+    - mot: lots en file
+      synonymes: [par lots, file]
+      pourquoi: étaler l'envoi au lieu de tout lancer d'un coup
+      niveau: confirme
+      enfants:
+        - mot: limitation de débit
+          synonymes: [rate limiting]
+          pourquoi: respecter les quotas des fournisseurs d'envoi
+          niveau: senior
+          concept: rate-limiting
+
+- id: rapports-pdf-trop-longs
+  situation: Chaque mois, 1 500 rapports PDF doivent être générés, et le traitement dure toute la nuit.
+  categorie: messagerie
+  arbre:
+    - mot: asynchrone
+      synonymes: [file, jobs, tâches de fond]
+      pourquoi: une tâche par rapport, dans une file
+      niveau: confirme
+      enfants:
+        - mot: workers en parallèle
+          synonymes: [parallélisme, workers]
+          pourquoi: diviser la durée totale
+          niveau: senior
+          enfants:
+            - mot: loi de little
+              synonymes: [little]
+              pourquoi: dimensionner le nombre de workers
+              niveau: lead
+              concept: loi-de-little
+        - mot: stockage objet
+          synonymes: [lien de téléchargement, url signée]
+          pourquoi: stocker le PDF et envoyer un lien
+          niveau: senior
+    - mot: optimiser le rapport unitaire
+      synonymes: [profiler, optimiser]
+      pourquoi: un rapport deux fois plus rapide divise tout par deux
+      niveau: senior
+
+- id: import-nocturne-envahissant
+  situation: Un import nocturne de 2 millions de lignes retarde tous les autres traitements jusqu'au matin.
+  categorie: messagerie
+  arbre:
+    - mot: import différentiel
+      synonymes: [delta, différentiel]
+      pourquoi: ne traiter que ce qui a changé
+      niveau: senior
+    - mot: file séparée
+      synonymes: [bulkhead, workers dédiés]
+      pourquoi: l'import n'occupe pas les workers des autres traitements
+      niveau: senior
+      concept: bulkhead
+      enfants:
+        - mot: traitement par lots
+          synonymes: [par lots]
+          pourquoi: découper l'import en morceaux reprenables
+          niveau: senior
+        - mot: throttling
+          synonymes: [limitation de débit]
+          pourquoi: ne pas saturer la base pendant l'import
+          niveau: lead
+          concept: rate-limiting
+
+- id: ecarts-avec-un-partenaire
+  situation: Des écarts apparaissent entre vos données et celles d'un partenaire, alimenté par webhooks.
+  categorie: messagerie
+  arbre:
+    - mot: réconciliation
+      synonymes: [rapprochement, job de réconciliation]
+      pourquoi: des notifications se perdent toujours, il faut les rattraper
+      niveau: senior
+      concept: polling-push
+      enfants:
+        - mot: source de vérité
+          pourquoi: savoir lequel des deux corrige l'autre
+          niveau: senior
+        - mot: état complet
+          pourquoi: republier l'état entier plutôt que rejouer les deltas
+          niveau: senior
+        - mot: taux d'écart
+          synonymes: [suivi des écarts]
+          pourquoi: le suivre comme un indicateur de santé de l'intégration
+          niveau: lead

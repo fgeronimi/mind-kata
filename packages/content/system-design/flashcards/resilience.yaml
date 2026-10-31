@@ -69,3 +69,28 @@
           pourquoi: appliquer la limite avant que la requête n'atteigne l'application
           niveau: senior
           concept: api-gateway
+
+- id: trop-de-monde-a-la-fois
+  situation: L'ouverture des inscriptions attire dix fois plus de monde que ce que le service peut absorber.
+  categorie: resilience
+  arbre:
+    - mot: salle d'attente virtuelle
+      synonymes: [file d'attente, waiting room]
+      pourquoi: admettre les utilisateurs à un débit que le système tient
+      niveau: senior
+      concept: load-shedding
+      enfants:
+        - mot: position affichée
+          synonymes: [position dans la file]
+          pourquoi: l'utilisateur patiente au lieu de recharger
+          niveau: lead
+    - mot: load shedding
+      synonymes: [délestage]
+      pourquoi: refuser une partie des requêtes plutôt que de tout faire tomber
+      niveau: senior
+      concept: load-shedding
+    - mot: test de charge
+      synonymes: [tests de charge]
+      pourquoi: connaître la capacité réelle avant le jour J
+      niveau: senior
+      concept: tests-de-charge

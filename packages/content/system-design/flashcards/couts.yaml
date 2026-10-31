@@ -1,0 +1,53 @@
+- id: facture-cloud-a-reduire
+  situation: La direction demande de réduire la facture cloud de 30 %.
+  categorie: couts
+  arbre:
+    - mot: finops
+      pourquoi: piloter le coût comme une métrique
+      niveau: senior
+      concept: finops
+      enfants:
+        - mot: étiquettes
+          synonymes: [labels, tags, export de facturation]
+          pourquoi: savoir qui dépense quoi avant de couper
+          niveau: senior
+        - mot: rightsizing
+          synonymes: [redimensionnement]
+          pourquoi: ajuster les machines à leur usage réel
+          niveau: senior
+          concept: rightsizing
+        - mot: engagements
+          synonymes: [committed use discounts, instances réservées]
+          pourquoi: une remise sur le socle stable
+          niveau: lead
+          concept: engagements-de-consommation
+        - mot: autoscaling
+          pourquoi: ne payer les pics que pendant les pics
+          niveau: senior
+          concept: autoscaling
+        - mot: sortie réseau
+          synonymes: [egress]
+          pourquoi: un poste souvent oublié
+          niveau: lead
+
+- id: appel-ia-trop-cher
+  situation: La génération de résumés par IA coûte trop cher et rend les pages lentes.
+  categorie: couts
+  arbre:
+    - mot: précalcul
+      synonymes: [asynchrone, en tâche de fond]
+      pourquoi: générer une fois, hors de la requête de l'utilisateur
+      niveau: senior
+      enfants:
+        - mot: cache
+          synonymes: [mise en cache]
+          pourquoi: ne pas regénérer un résumé inchangé
+          niveau: confirme
+    - mot: petit modèle
+      synonymes: [routage de modèle, modèle plus petit]
+      pourquoi: réserver le gros modèle aux cas difficiles
+      niveau: lead
+    - mot: traitement par lots
+      synonymes: [api batch, batch]
+      pourquoi: moins cher quand l'immédiateté n'est pas nécessaire
+      niveau: lead
