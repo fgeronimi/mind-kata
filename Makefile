@@ -1,5 +1,7 @@
 .DEFAULT_GOAL := help
-.PHONY: help install dev build format format-check lint typecheck test check clean
+.PHONY: help install dev build format format-check lint typecheck test check docker-build docker-run clean
+
+IMAGE ?= mind-kata-web
 
 help: ## Liste les cibles disponibles
 	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
@@ -29,6 +31,12 @@ test: ## Lance les tests unitaires
 	pnpm test
 
 check: format-check lint typecheck test ## Tout ce que la CI vérifie
+
+docker-build: ## Construit l'image de production (linux/amd64, comme Cloud Run)
+	docker build --platform linux/amd64 -t $(IMAGE) .
+
+docker-run: ## Lance l'image sur http://localhost:8080
+	docker run --rm --platform linux/amd64 -p 8080:8080 $(IMAGE)
 
 clean: ## Supprime dépendances et artefacts de build
 	rm -rf node_modules apps/*/node_modules packages/*/node_modules apps/*/.next apps/*/dist packages/*/dist
