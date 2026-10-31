@@ -1,0 +1,56 @@
+- id: deploiement-risque
+  situation: Une refonte importante doit partir en production, mais l'équipe craint une régression chez les clients.
+  categorie: deploiement
+  arbre:
+    - mot: feature flag
+      synonymes: [drapeau de fonctionnalité, feature toggle]
+      pourquoi: séparer le déploiement de la mise en service, et couper en un clic
+      niveau: confirme
+      concept: feature-flag
+      enfants:
+        - mot: clients pilotes
+          synonymes: [pilotes, beta]
+          pourquoi: activer d'abord pour quelques clients volontaires
+          niveau: senior
+    - mot: canary
+      synonymes: [déploiement canary, canary release]
+      pourquoi: une petite part du trafic sur la nouvelle version, puis on élargit
+      niveau: senior
+      concept: canary
+      alternatives:
+        - mot: blue green
+          synonymes: [blue/green, bleu vert]
+          condition: bascule d'un coup avec retour arrière instantané
+      enfants:
+        - mot: comparer les erreurs
+          synonymes: [comparer la latence, métriques comparées]
+          pourquoi: décider d'élargir sur des chiffres, pas sur une impression
+          niveau: lead
+
+- id: erreurs-apres-deploiement
+  situation: Juste après un déploiement, le taux d'erreur passe de 0,1 % à 5 %.
+  categorie: deploiement
+  arbre:
+    - mot: rollback
+      synonymes: [retour arrière, revenir en arrière, couper le flag]
+      pourquoi: rétablir d'abord, comprendre ensuite
+      niveau: confirme
+      enfants:
+        - mot: communiquer
+          synonymes: [prévenir, communication]
+          pourquoi: support et clients informés pendant l'incident
+          niveau: senior
+        - mot: post-mortem
+          synonymes: [post mortem, retour d'expérience]
+          pourquoi: comprendre la cause et éviter qu'elle revienne
+          niveau: senior
+          enfants:
+            - mot: sans coupable
+              synonymes: [blameless]
+              pourquoi: chercher ce qui a permis l'erreur, pas qui l'a commise
+              niveau: lead
+        - mot: canary
+          synonymes: [déploiement progressif]
+          pourquoi: la prochaine fois, détecter sur une petite part du trafic
+          niveau: lead
+          concept: canary

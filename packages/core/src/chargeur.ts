@@ -6,7 +6,9 @@ import { type Architecture, schemaArchitecture } from "./architecture";
 import { type Concept, schemaConcept } from "./concept";
 import { type Domaine, schemaDomaine } from "./domaine";
 import { type Equivalences, schemaEquivalences } from "./equivalences";
+import { type Flashcard, schemaFlashcard } from "./flashcard";
 import { type Guide, schemaGuide } from "./guide";
+import { parcourir } from "./score";
 import { type Simulation, schemaSimulation } from "./simulation";
 
 // Les erreurs de contenu sont lues par les rédacteurs : dans leur langue.
@@ -19,6 +21,7 @@ export interface Pack {
   guides: Guide[];
   simulations: Simulation[];
   equivalences: Equivalences[];
+  flashcards: Flashcard[];
 }
 
 // Toutes les erreurs d'un pack sont remontées d'un coup : corriger un fichier, relancer,
@@ -175,6 +178,36 @@ export function chargerPack(dossier: string): Pack {
     }
   }
 
+  // Un fichier d'exercices regroupe plusieurs situations (une catégorie, par exemple) :
+  // l'identifiant ne vient plus du nom de fichier, son unicité se vérifie entre fichiers.
+  const flashcards: Flashcard[] = [];
+  const origineDesFlashcards = new Map<string, string>();
+  const repertoireFlashcards = repertoireDuType("flashcard", "flashcards");
+  if (repertoireFlashcards) {
+    const schemaListe = z.array(schemaFlashcard(domaine));
+    for (const nom of readdirSync(repertoireFlashcards)
+      .filter((n) => n.endsWith(".yaml"))
+      .sort()) {
+      const fichier = path.join(repertoireFlashcards, nom);
+      const liste = valider(
+        schemaListe,
+        lireYaml(fichier, readFileSync(fichier, "utf8")),
+        fichier,
+      );
+      for (const carte of liste ?? []) {
+        const deja = origineDesFlashcards.get(carte.id);
+        if (deja) {
+          erreurs.push(
+            `${relatif(fichier)} : id « ${carte.id} » déjà utilisé dans ${deja}`,
+          );
+          continue;
+        }
+        origineDesFlashcards.set(carte.id, relatif(fichier));
+        flashcards.push(carte);
+      }
+    }
+  }
+
   const idsConcepts = new Set(concepts.map((c) => c.id));
   const verifierLiens = (sousDossier: string, id: string, cibles: string[]) => {
     const origine = relatif(path.join(dossier, sousDossier, `${id}.md`));
@@ -189,6 +222,15 @@ export function chargerPack(dossier: string): Pack {
     verifierLiens("architectures", a.id, a.concepts);
   for (const sim of simulations)
     verifierLiens("simulations", sim.id, sim.concepts);
+  for (const carte of flashcards) {
+    for (const { noeud } of parcourir(carte.arbre)) {
+      if (noeud.concept && !idsConcepts.has(noeud.concept)) {
+        erreurs.push(
+          `${origineDesFlashcards.get(carte.id) ?? "flashcards"} : « ${carte.id} », nœud « ${noeud.mot} » : lien vers le concept inconnu « ${noeud.concept} »`,
+        );
+      }
+    }
+  }
 
   if (erreurs.length > 0) throw new ErreurDeContenu(erreurs);
   return {
@@ -198,5 +240,6 @@ export function chargerPack(dossier: string): Pack {
     guides,
     simulations,
     equivalences,
+    flashcards,
   };
 }

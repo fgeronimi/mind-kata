@@ -1,0 +1,81 @@
+- id: base-saturee-en-lecture
+  situation: La base de données sature en lecture, alors qu'un cache est déjà en place.
+  categorie: donnees
+  arbre:
+    - mot: index
+      synonymes: [plan d'exécution, explain]
+      pourquoi: la première étape, avant d'ajouter de l'infrastructure
+      niveau: confirme
+      concept: index
+      enfants:
+        - mot: réplicas
+          synonymes: [réplicas en lecture, read replicas, replica]
+          pourquoi: répartir les lectures sur des copies de la base
+          niveau: senior
+          concept: replicas-lecture
+          enfants:
+            - mot: retard de réplication
+              synonymes: [lag de réplication]
+              pourquoi: les réplicas sont en retard de quelques millisecondes
+              niveau: senior
+              enfants:
+                - mot: lire ses propres écritures
+                  synonymes: [read your writes]
+                  pourquoi: un utilisateur doit voir tout de suite sa propre modification
+                  niveau: lead
+                  concept: read-your-writes
+
+- id: deux-modifications-simultanees
+  situation: Deux agents modifient la même fiche en même temps, et la seconde sauvegarde écrase la première sans prévenir.
+  categorie: donnees
+  arbre:
+    - mot: verrouillage optimiste
+      synonymes: [optimistic locking]
+      pourquoi: refuser la seconde sauvegarde quand la fiche a changé entre-temps
+      niveau: senior
+      concept: verrouillage-optimiste
+      alternatives:
+        - mot: verrouillage pessimiste
+          synonymes: [select for update]
+          condition: conflits fréquents ou très coûteux
+      enfants:
+        - mot: numéro de version
+          synonymes: [version]
+          pourquoi: comparer la version lue à la version en base au moment d'écrire
+          niveau: senior
+        - mot: message à l'utilisateur
+          synonymes: [prévenir l'utilisateur]
+          pourquoi: celui dont la sauvegarde est refusée doit comprendre et pouvoir reprendre
+          niveau: lead
+
+- id: renommer-une-colonne
+  situation: Il faut renommer une colonne d'une table de 200 millions de lignes, sans interrompre le service.
+  categorie: donnees
+  arbre:
+    - mot: expand and contract
+      synonymes: [élargir puis réduire, parallel change]
+      pourquoi: chaque étape reste compatible avec la version du code déjà déployée
+      niveau: senior
+      concept: expand-and-contract
+      enfants:
+        - mot: nouvelle colonne
+          pourquoi: ajouter avant de retirer
+          niveau: senior
+          enfants:
+            - mot: double écriture
+              pourquoi: les deux colonnes restent à jour pendant la transition
+              niveau: senior
+              enfants:
+                - mot: rattrapage par lots
+                  synonymes: [backfill, par lots]
+                  pourquoi: recopier l'existant sans verrouiller la table
+                  niveau: senior
+                  enfants:
+                    - mot: bascule de la lecture
+                      pourquoi: lire la nouvelle colonne une fois le rattrapage fini
+                      niveau: lead
+        - mot: index en ligne
+          synonymes: [concurrently, create index concurrently]
+          pourquoi: créer un index sans bloquer les écritures
+          niveau: lead
+          concept: index

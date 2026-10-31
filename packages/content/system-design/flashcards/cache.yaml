@@ -1,0 +1,23 @@
+- id: ruee-sur-le-cache
+  situation: Une clé de cache très demandée expire, et cinq mille requêtes frappent la base en même temps.
+  categorie: cache
+  arbre:
+    - mot: cache stampede
+      synonymes: [ruée sur le cache, thundering herd]
+      pourquoi: nommer le phénomène, c'est déjà savoir qu'il a des parades
+      niveau: senior
+      concept: cache-stampede
+      enfants:
+        - mot: verrou
+          synonymes: [lock, mutex]
+          pourquoi: une seule requête recalcule, les autres attendent
+          niveau: senior
+        - mot: stale-while-revalidate
+          synonymes: [servir le périmé]
+          pourquoi: servir l'ancienne valeur pendant le recalcul
+          niveau: senior
+          concept: stale-while-revalidate
+        - mot: ttl aléatoire
+          synonymes: [durée de vie aléatoire, expiration aléatoire]
+          pourquoi: les clés n'expirent pas toutes à la même seconde
+          niveau: lead

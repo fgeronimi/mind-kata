@@ -59,4 +59,4 @@ categories:
     libelle: Secteur public
     description: Les exigences propres aux services publics numériques.
 
-types: [concept, guide, architecture, simulation, equivalences]
+types: [concept, guide, architecture, simulation, equivalences, flashcard]
