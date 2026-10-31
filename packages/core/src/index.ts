@@ -7,3 +7,13 @@ export { type Simulation, schemaSimulation } from "./simulation";
 export { type Equivalences, schemaEquivalences } from "./equivalences";
 export { chargerPack, ErreurDeContenu, type Pack } from "./chargeur";
 export { type Flashcard, type Noeud, schemaFlashcard } from "./flashcard";
+export {
+  type Chemin,
+  type Couche,
+  type Evaluation,
+  evaluer,
+  type NoeudParcouru,
+  parcourir,
+} from "./score";
+export { normaliser } from "./normalisation";
+export { reperer } from "./rapprochement";
