@@ -6,7 +6,7 @@ categorie: resilience
 liens: [idempotence, timeout, circuit-breaker, dlq]
 niveaux:
   confirme: Sait qu'on réessaie une erreur passagère avec un délai qui augmente (1 s, 2 s, 4 s), et pas en boucle immédiate.
-  senior: Ajoute du jitter, limite le nombre de tentatives, ne réessaie que les erreurs transitoires (pas un 400), et vérifie que l'opération réessayée est idempotente.
+  senior: "Ajoute du jitter, limite le nombre de tentatives, ne réessaie que les erreurs transitoires (pas un 400), respecte le Retry-After renvoyé avec un 429 ou un 503, et vérifie que l'opération réessayée est idempotente."
   lead: Harmonise la politique de retry entre services pour éviter l'effet d'amplification, et la relie aux budgets d'erreur et aux files d'échecs.
 ---
 

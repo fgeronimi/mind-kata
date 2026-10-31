@@ -7,7 +7,7 @@ liens: [strategies-de-cache]
 niveaux:
   confirme: "Sait qu'une entrée de cache a une durée de vie, et qu'un cache plein évince les entrées les moins utiles."
   senior: "Choisit la durée de vie selon la fraîcheur exigée et la politique d'éviction (moins récemment ou moins fréquemment utilisée) selon les accès."
-  lead: "Dimensionne la mémoire du cache à partir du taux de succès mesuré."
+  lead: "Fait du taux de succès du cache un indicateur suivi, et arbitre entre mémoire supplémentaire et fraîcheur des données."
 ---
 
 - **TTL** : durée de vie d'une entrée.

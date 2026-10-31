@@ -7,7 +7,7 @@ liens: [pub-sub]
 niveaux:
   confirme: "Sait que SSE pousse des données du serveur vers le navigateur, et que WebSocket permet l'échange dans les deux sens."
   senior: "Choisit SSE quand seul le serveur pousse, WebSocket sinon, et relie les serveurs par un pub/sub."
-  lead: "Dimensionne le nombre de connexions ouvertes et prévoit la reconnexion."
+  lead: "Ne passe au temps réel que si le besoin produit le justifie, et sait proposer un rafraîchissement périodique à la place quand il suffit."
 ---
 
 - **SSE** : le serveur pousse vers le navigateur, sur une connexion HTTP simple.

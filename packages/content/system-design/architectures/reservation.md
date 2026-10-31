@@ -6,7 +6,14 @@ briques:
   - réservation temporaire avec expiration
   - verrouillage optimiste ou pessimiste
   - protection contre les robots
-concepts: [idempotence, rate-limiting]
+concepts:
+  [
+    idempotence,
+    rate-limiting,
+    reservation-temporaire,
+    verrouillage-optimiste,
+    anti-robots,
+  ]
 ---
 
 ```mermaid

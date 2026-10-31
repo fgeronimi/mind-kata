@@ -6,7 +6,7 @@ categorie: resilience
 liens: [circuit-breaker, retry-backoff, bulkhead]
 niveaux:
   confirme: Sait qu'un appel à un service externe doit avoir un délai maximal, et que c'est le premier réflexe face à un service lent.
-  senior: Fixe des timeouts courts et cohérents de bout en bout (le timeout d'un appelant dépasse la somme de ceux qu'il attend), distingue connexion et lecture, et les combine avec retries et disjoncteur.
+  senior: "Fixe des timeouts courts, distingue connexion et lecture, propage une échéance à toute la chaîne d'appels plutôt que d'empiler des délais fixes (avec des retries, les temps se multiplient), et les combine avec retries et disjoncteur."
   lead: Impose un timeout explicite sur tout appel réseau, et fait des budgets de latence un élément du contrat entre équipes.
 ---
 

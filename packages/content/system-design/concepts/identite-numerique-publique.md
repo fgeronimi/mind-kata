@@ -6,7 +6,7 @@ categorie: secteur-public
 liens: [sso, rate-limiting]
 niveaux:
   confirme: "Sait que les services publics proposent la connexion avec une identité numérique déjà vérifiée (FranceConnect pour les usagers, ProConnect pour les agents et professionnels)."
-  senior: "L'intègre en OpenID Connect, gère le niveau de garantie demandé et prévoit un parcours de repli pour les usagers qui n'en disposent pas."
+  senior: "L'intègre en OpenID Connect, gère le niveau de garantie demandé (FranceConnect+ pour un niveau élevé) et prévoit un parcours de repli pour les usagers qui n'en disposent pas."
   lead: "L'utilise pour réduire la fraude et le coût de la vérification d'identité, sans exclure les publics éloignés du numérique."
 ---
 

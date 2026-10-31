@@ -7,7 +7,7 @@ liens: []
 niveaux:
   confirme: "Sait qu'afficher une liste en faisant une requête par élément multiplie les requêtes."
   senior: "Le détecte (profilage, compteur de requêtes en test) et le corrige par jointure ou chargement anticipé."
-  lead: "Ajoute une vérification automatique du nombre de requêtes sur les pages critiques."
+  lead: "Fait de la détection du N+1 une vérification automatique de la CI sur les parcours critiques, plutôt qu'une affaire de vigilance individuelle."
 ---
 
 Cinquante dossiers affichés, cinquante et une requêtes : une pour la liste, une par
