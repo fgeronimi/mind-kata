@@ -21,7 +21,12 @@ make dev         # applications en mode développement
 make format      # Prettier (classes Tailwind triées)
 make check       # format-check + lint + typecheck + test, ce que la CI vérifie
 make build       # build de tous les paquets
+make docker-build && make docker-run   # image de prod sur http://localhost:8080
 ```
+
+L'image (`Dockerfile` à la racine, contexte = tout le dépôt) embarque la sortie
+`standalone` de Next : `server.js` est sous `apps/web/` car le traçage part de la
+racine du monorepo. Construite en `linux/amd64`, l'architecture de Cloud Run.
 
 Prettier et sa config vivent à la racine (tout le dépôt) ; ESLint et Vitest sont
 configurés par paquet. `eslint-config-prettier` reste en dernier dans chaque config
