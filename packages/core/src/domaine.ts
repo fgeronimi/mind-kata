@@ -7,7 +7,7 @@ const libelle = z.strictObject({
   description: texte.optional(),
 });
 
-const sansDoublon = <T extends { id: string }>(elements: T[]) =>
+const sansDoublon = (elements: { id: string }[]) =>
   new Set(elements.map((e) => e.id)).size === elements.length;
 
 export const typesDeContenu = [

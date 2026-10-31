@@ -18,8 +18,10 @@ export const schemaFlashcard = (domaine: Domaine) => {
     niveau: enumNiveaux(domaine).optional(),
     concept: identifiant.optional(),
     alternatives: z.array(alternative).default([]),
-    // Getter : syntaxe de Zod 4 pour un schéma qui se référence lui-même.
-    get enfants() {
+    // Getter : syntaxe de Zod 4 pour un schéma qui se référence lui-même. Le type de
+    // retour explicite est indispensable, sinon TypeScript ne résout pas la récursion
+    // et retombe sur any.
+    get enfants(): z.ZodDefault<z.ZodArray<typeof noeud>> {
       return z.array(noeud).default([]);
     },
   });
