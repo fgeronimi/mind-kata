@@ -32,3 +32,10 @@ export const trouverGuide = (domaine: string, guide: string) => {
   if (!trouve) notFound();
   return { pack, guide: trouve };
 };
+
+export const trouverArchitecture = (domaine: string, architecture: string) => {
+  const pack = trouverPack(domaine);
+  const trouve = pack.architectures.find((a) => a.id === architecture);
+  if (!trouve) notFound();
+  return { pack, architecture: trouve };
+};

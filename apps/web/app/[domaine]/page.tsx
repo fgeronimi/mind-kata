@@ -14,7 +14,9 @@ export async function generateMetadata({
 }
 
 export default async function PageDomaine({ params }: PageProps<"/[domaine]">) {
-  const { domaine, concepts, guides } = trouverPack((await params).domaine);
+  const { domaine, concepts, guides, architectures } = trouverPack(
+    (await params).domaine,
+  );
   const categories = domaine.categories
     .map((categorie) => ({
       ...categorie,
@@ -45,6 +47,29 @@ export default async function PageDomaine({ params }: PageProps<"/[domaine]">) {
               </li>
             ))}
           </ol>
+        </>
+      )}
+
+      {architectures.length > 0 && (
+        <>
+          <h2 className="mt-10 text-xl font-semibold">Architectures types</h2>
+          <p className="mt-1 text-sm text-muted">
+            Identifier le type de problème donne l&apos;architecture de départ ;
+            on l&apos;adapte ensuite aux chiffres.
+          </p>
+          <ul className="mt-4 divide-y divide-border rounded-lg border border-border">
+            {architectures.map((a) => (
+              <li key={a.id}>
+                <Link
+                  href={`/${domaine.id}/architectures/${a.id}`}
+                  className="block p-4 hover:bg-black/5 dark:hover:bg-white/5"
+                >
+                  <span className="font-semibold">{a.titre}</span>
+                  <p className="mt-1 text-sm text-muted">{a.probleme}</p>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </>
       )}
 
