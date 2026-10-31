@@ -21,6 +21,7 @@ export default async function PageDomaine({ params }: PageProps<"/[domaine]">) {
     architectures,
     simulations,
     equivalences,
+    flashcards,
   } = trouverPack((await params).domaine);
   const categories = domaine.categories
     .map((categorie) => ({
@@ -35,6 +36,15 @@ export default async function PageDomaine({ params }: PageProps<"/[domaine]">) {
     <>
       <h1 className="text-3xl font-semibold">{domaine.nom}</h1>
       <p className="mt-3 text-muted">{domaine.description}</p>
+
+      {flashcards.length > 0 && (
+        <Link
+          href={`/${domaine.id}/exercices`}
+          className="mt-6 inline-block rounded-md bg-accent px-4 py-2 font-semibold text-white"
+        >
+          S&apos;entraîner : {flashcards.length} exercices éclair
+        </Link>
+      )}
 
       {guides.length > 0 && (
         <>
