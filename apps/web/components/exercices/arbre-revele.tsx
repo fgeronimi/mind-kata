@@ -7,7 +7,8 @@ interface Props {
   cites: ReadonlySet<Chemin>;
   evaluation: Evaluation;
   libellesNiveaux: Record<string, string>;
-  onBasculer: (chemin: Chemin) => void;
+  // Absent : lecture seule, les cases reflètent ce qui a été retenu sans se modifier.
+  onBasculer?: (chemin: Chemin) => void;
 }
 
 type Etat = "trouve" | "orphelin" | "manquant";
@@ -56,8 +57,9 @@ export function ArbreRevele({
                   id={id}
                   type="checkbox"
                   checked={cites.has(chemin)}
+                  disabled={!onBasculer}
                   onChange={() => {
-                    onBasculer(chemin);
+                    onBasculer?.(chemin);
                   }}
                   className="size-4 accent-accent"
                 />

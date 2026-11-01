@@ -32,6 +32,8 @@ export default defineConfig({
         .update(CODE_DE_TEST.replaceAll("-", ""))
         .digest("hex"),
       EXAMINATEUR_CLE_SESSION: "cle-de-session-de-test",
+      // Examinateur simulé (lib/ia/fabrique.ts) : déterministe, sans appel réseau.
+      IA_FOURNISSEUR: "faux",
     },
   },
 });

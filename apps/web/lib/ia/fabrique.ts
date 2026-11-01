@@ -3,6 +3,8 @@ import "server-only";
 import { Firestore } from "@google-cloud/firestore";
 import { avecBudget } from "./budget";
 import { creerCompteurFirestore } from "./compteur-firestore";
+import { creerCompteurMemoire } from "./compteur-memoire";
+import { creerModeleFaux } from "./faux";
 import { creerModeleGemini, GEMINI_3_1_FLASH_LITE } from "./gemini";
 import type { ModeleIA } from "./modele";
 
@@ -26,6 +28,24 @@ const creer = (): ModeleIA => {
         creerCompteurFirestore(
           new Firestore({ projectId: projet, preferRest: true }),
         ),
+      );
+    // Pour Playwright : déterministe et gratuit. Première réponse relancée, la
+    // suivante rattachée à la racine ; « panne » simule un fournisseur en échec.
+    case "faux":
+      return avecBudget(
+        creerModeleFaux({
+          reponses: ({ messages }) => {
+            if (messages.some((m) => m.texte.includes("panne"))) {
+              throw new Error("Panne simulée.");
+            }
+            return JSON.stringify(
+              messages.length === 1
+                ? { cites: [], relance: "Pouvez-vous préciser ?" }
+                : { cites: ["0"], relance: "" },
+            );
+          },
+        }),
+        creerCompteurMemoire(),
       );
     default:
       throw new IaNonConfiguree();
