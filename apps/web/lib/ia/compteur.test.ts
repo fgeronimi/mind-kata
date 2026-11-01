@@ -68,7 +68,6 @@ contrat("en mémoire", creerCompteurMemoire);
 const emulateur = process.env["FIRESTORE_EMULATOR_HOST"];
 if (emulateur) {
   const base = new Firestore({ projectId: "demo-mind-kata" });
-  // Les transactions concurrentes se rejouent avec un temps d'attente croissant.
   contrat("Firestore (émulateur)", () => creerCompteurFirestore(base), 30_000);
 } else {
   describe.skip("compteur Firestore (émulateur absent)", () => {

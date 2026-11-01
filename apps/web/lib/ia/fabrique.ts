@@ -23,11 +23,9 @@ const creer = (): ModeleIA => {
     case "vertex-gemini":
       return avecBudget(
         creerModeleGemini({ projet, ...GEMINI_3_1_FLASH_LITE }),
-        // REST plutôt que gRPC : démarrage plus rapide, ce qui compte sur Cloud Run
-        // où une instance démarre à la première requête.
-        creerCompteurFirestore(
-          new Firestore({ projectId: projet, preferRest: true }),
-        ),
+        // gRPC, le transport par défaut : c'est celui que le test de contrat vérifie
+        // contre l'émulateur, qui n'accepte pas REST sans identifiants.
+        creerCompteurFirestore(new Firestore({ projectId: projet })),
       );
     // Pour Playwright : déterministe et gratuit. Première réponse relancée, la
     // suivante rattachée à la racine ; « panne » simule un fournisseur en échec.
