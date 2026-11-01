@@ -13,6 +13,7 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@google-cloud/firestore": "^9.4.0",
     "@mind-kata/content": "workspace:*",
     "@mind-kata/core": "workspace:*",
     "mermaid": "^12.2.0",

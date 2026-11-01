@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install dev build format format-check lint typecheck test test-e2e check docker-build docker-run clean
+.PHONY: help install dev build format format-check lint typecheck test test-e2e test-firestore check docker-build docker-run clean
 
 IMAGE ?= mind-kata-web
 
@@ -32,6 +32,16 @@ test: ## Lance les tests unitaires
 
 test-e2e: ## Parcours dans un vrai navigateur, contre le build de production (après make build)
 	pnpm --filter @mind-kata/web test:e2e
+
+# L'émulateur officiel, dans Docker : pas de Java à installer, et jamais la vraie base.
+EMULATEUR_FIRESTORE ?= gcr.io/google.com/cloudsdktool/google-cloud-cli:591.0.0-emulators
+
+test-firestore: ## Teste le compteur de budget contre l'émulateur Firestore (Docker)
+	@docker run -d --rm --name mind-kata-firestore -p 8086:8086 $(EMULATEUR_FIRESTORE) \
+		gcloud emulators firestore start --host-port=0.0.0.0:8086 >/dev/null
+	@trap 'docker stop mind-kata-firestore >/dev/null' EXIT; \
+		until docker logs mind-kata-firestore 2>&1 | grep -q 'Dev App Server is now running'; do sleep 1; done; \
+		FIRESTORE_EMULATOR_HOST=localhost:8086 pnpm --filter @mind-kata/web exec vitest run lib/ia/compteur.test.ts
 
 check: format-check lint typecheck test ## Tout ce que la CI vérifie
 
