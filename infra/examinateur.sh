@@ -135,12 +135,9 @@ done
 
 etape "À faire dans la console"
 cat <<EOF
-  1. Model Garden : activer Claude Haiku 5.5 (éditeur Anthropic), accepter les conditions,
-     noter les régions proposées et le tarif.
-     https://console.cloud.google.com/vertex-ai/model-garden?project=${PROJECT_ID}
-  2. Quotas : abaisser les requêtes par minute du modèle (filtre « anthropic »), garde-fou
-     contre une boucle qui s'emballe.
-     https://console.cloud.google.com/iam-admin/quotas?project=${PROJECT_ID}
+  Quotas : abaisser les requêtes par minute du modèle Gemini retenu, garde-fou contre
+  une boucle qui s'emballe.
+  https://console.cloud.google.com/iam-admin/quotas?project=${PROJECT_ID}
 EOF
 
 if [[ -n "$code_acces" ]] && $APPLIQUER; then
