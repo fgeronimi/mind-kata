@@ -7,6 +7,7 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
+import { LONGUEUR_MAX_LECTURE } from "@/lib/examinateur/limites";
 
 // Ce dont on se sert de la reconnaissance vocale. Le DOM de TypeScript décrit ses
 // événements, pas l'objet lui-même (préfixé webkit dans Chrome et Safari).
@@ -129,35 +130,96 @@ const sAbonner = (prevenir: () => void) => {
   };
 };
 
-// Lecture à voix haute par la synthèse du navigateur, gratuite et locale.
+// Voix du navigateur : gratuite et locale, mais robotique. Elle ne sert plus que de
+// repli quand la voix du serveur n'est pas disponible (ADR 0011).
+const lireParLeNavigateur = (texte: string) => {
+  if (!("speechSynthesis" in window)) return;
+  const enonce = new SpeechSynthesisUtterance(texte);
+  enonce.lang = "fr-FR";
+  const voix = window.speechSynthesis
+    .getVoices()
+    .find((v) => v.lang.startsWith("fr"));
+  if (voix) enonce.voice = voix;
+  window.speechSynthesis.speak(enonce);
+};
+
+// Quota atteint ou panne : inutile de redemander à chaque bulle, la page reste sur la
+// voix du navigateur jusqu'au prochain chargement.
+let serveurIndisponible = false;
+
+// Lecture à voix haute : l'audio est synthétisé par le serveur, puis joué ici.
 export const useLecture = () => {
-  const disponible = useDisponible(() => "speechSynthesis" in window);
+  const disponible = useDisponible(() => typeof Audio !== "undefined");
   const active = useSyncExternalStore(sAbonner, lirePreference, () => false);
+  const enCours = useRef<{
+    audio?: HTMLAudioElement;
+    abandon: AbortController;
+  }>(undefined);
 
   const arreter = useCallback(() => {
+    if (enCours.current) {
+      const { abandon, audio } = enCours.current;
+      abandon.abort();
+      if (audio) {
+        audio.pause();
+        URL.revokeObjectURL(audio.src);
+      }
+      enCours.current = undefined;
+    }
     if ("speechSynthesis" in window) window.speechSynthesis.cancel();
   }, []);
 
   const basculer = useCallback(() => {
-    if (lirePreference()) window.speechSynthesis.cancel();
+    if (lirePreference()) arreter();
     ecrirePreference(!lirePreference());
-  }, []);
+  }, [arreter]);
 
   const lire = useCallback(
     (texte: string) => {
-      if (!active || !("speechSynthesis" in window)) return;
-      const enonce = new SpeechSynthesisUtterance(texte);
-      enonce.lang = "fr-FR";
-      const voix = window.speechSynthesis
-        .getVoices()
-        .find((v) => v.lang.startsWith("fr"));
-      if (voix) enonce.voice = voix;
+      if (!active) return;
       // Une nouvelle bulle coupe la précédente : on n'empile pas les lectures.
-      window.speechSynthesis.cancel();
-      window.speechSynthesis.speak(enonce);
+      arreter();
+      if (serveurIndisponible || texte.length > LONGUEUR_MAX_LECTURE) {
+        lireParLeNavigateur(texte);
+        return;
+      }
+      const lecture: { audio?: HTMLAudioElement; abandon: AbortController } = {
+        abandon: new AbortController(),
+      };
+      enCours.current = lecture;
+      void (async () => {
+        try {
+          const reponse = await fetch("/api/examinateur/voix", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ texte }),
+            signal: lecture.abandon.signal,
+          });
+          if (!reponse.ok) {
+            if (reponse.status !== 401) serveurIndisponible = true;
+            throw new Error(`Synthèse refusée (${String(reponse.status)}).`);
+          }
+          const url = URL.createObjectURL(await reponse.blob());
+          if (lecture.abandon.signal.aborted) {
+            URL.revokeObjectURL(url);
+            return;
+          }
+          lecture.audio = new Audio(url);
+          lecture.audio.addEventListener("ended", () => {
+            URL.revokeObjectURL(url);
+          });
+          await lecture.audio.play();
+        } catch {
+          // Arrêtée exprès (nouvelle bulle, dictée) : rien à lire. Sinon, la voix du
+          // navigateur prend le relais.
+          if (!lecture.abandon.signal.aborted) lireParLeNavigateur(texte);
+        }
+      })();
     },
-    [active],
+    [active, arreter],
   );
+
+  useEffect(() => arreter, [arreter]);
 
   return { disponible, active, basculer, lire, arreter };
 };

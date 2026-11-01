@@ -117,10 +117,11 @@ jobs:
             --max-instances=2
             --cpu=1
             --memory=512Mi
-          # Le fournisseur d'IA est choisi ici (lib/ia/fabrique.ts) : changer de modèle
-          # ne demande pas de reconstruire l'image.
+          # Les fournisseurs d'IA et de voix sont choisis ici (lib/ia/fabrique.ts,
+          # lib/voix/fabrique.ts) : en changer ne demande pas de reconstruire l'image.
           env_vars: |-
             IA_FOURNISSEUR=vertex-gemini
+            VOIX_FOURNISSEUR=google-chirp
             GOOGLE_CLOUD_PROJECT=${{ vars.GCP_PROJECT_ID }}
           # Références vers Secret Manager, lues par le compte d'exécution au démarrage :
           # les valeurs ne passent jamais par GitHub.

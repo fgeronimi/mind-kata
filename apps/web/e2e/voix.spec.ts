@@ -36,6 +36,8 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
+// Sans VOIX_FOURNISSEUR, la route répond « indisponible » : c'est la voix du
+// navigateur qui lit.
 test("on dicte sa réponse, et l'examinateur est lu à voix haute", async ({
   page,
 }) => {
@@ -61,6 +63,46 @@ test("on dicte sa réponse, et l'examinateur est lu à voix haute", async ({
       ),
     )
     .toContain("Pouvez-vous préciser ?");
+});
+
+test("la voix du serveur est jouée quand elle est disponible", async ({
+  page,
+}) => {
+  const lus: string[] = [];
+  await page.route("/api/examinateur/voix", async (route) => {
+    lus.push((route.request().postDataJSON() as { texte: string }).texte);
+    await route.fulfill({ contentType: "audio/mpeg", body: "mp3" });
+  });
+  // Le faux MP3 ne se décode pas : on note seulement que la lecture est lancée.
+  await page.addInitScript(() => {
+    const fenetre = window as unknown as Record<string, unknown>;
+    fenetre["__jouees"] = 0;
+    HTMLMediaElement.prototype.play = function () {
+      (fenetre["__jouees"] as number)++;
+      return Promise.resolve();
+    };
+  });
+
+  await page.goto("/acces?suite=/system-design/examinateur");
+  await page.getByLabel("Code d'accès").fill(CODE_DE_TEST);
+  await page.getByRole("button", { name: "Entrer" }).click();
+  await page.getByRole("button", { name: "Commencer une séance" }).click();
+  await page.getByLabel("Lire l'examinateur à voix haute").check();
+  await page.getByLabel("Votre réponse").fill("une réponse");
+  await page.getByRole("button", { name: "Répondre" }).click();
+
+  await expect(page.getByText("Pouvez-vous préciser ?")).toBeVisible();
+  await expect.poll(() => lus).toContain("Pouvez-vous préciser ?");
+  await expect
+    .poll(() =>
+      page.evaluate(() => (window as unknown as { __jouees: number }).__jouees),
+    )
+    .toBeGreaterThan(0);
+  expect(
+    await page.evaluate(
+      () => (window as unknown as { __lectures: string[] }).__lectures,
+    ),
+  ).toEqual([]);
 });
 
 test("la préférence de lecture est gardée d'une visite à l'autre", async ({
