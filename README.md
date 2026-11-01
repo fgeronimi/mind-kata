@@ -50,6 +50,7 @@ graph LR
   gha -- déploie --> run[Cloud Run<br/>Next.js]
   user[Navigateur] --> run
   run -- examinateur --> vertex[Vertex AI<br/>Gemini Flash-Lite]
+  run -- lecture --> tts[Text-to-Speech<br/>Chirp 3 HD]
   run -- budget --> fs[(Firestore)]
   sm[Secret Manager] --> run
   run -. plus tard .-> ps[Pub/Sub] -.-> worker[Worker Node.js] -.-> gh[PR GitHub]
@@ -89,7 +90,7 @@ docs/adr/          notes de décision
 | 1. Contenu et fiches  | Pack system design, schémas Zod, pages concepts, architectures, simulations | ✅   |
 | 2. Exercices en arbre | Tirage, réponse, révélation de l'arbre, score par couches                   | ✅   |
 | A. Examinateur texte  | Chat, relances ciblées, score par le code, verdict, plafonds, repli         | ✅   |
-| B. Voix               | Micro et réponse lue à voix haute, API du navigateur                        | ⏳   |
+| B. Voix               | Dictée par le navigateur, lecture par une synthèse serveur plafonnée        | ⏳   |
 | C. Fiche de séance    | Concepts manquants, liens, version imprimable                               | —    |
 | Plus tard             | Simulation complète, comptes, contributions, ingestion, mode évaluation     | —    |
 
@@ -137,6 +138,7 @@ options envisagées, décision, conséquences.
 8. [Rapprochement lexical des réponses, avant l'IA](docs/adr/0008-rapprochement-lexical-avant-l-ia.md)
 9. [MVP : un examinateur conversationnel, sans base de données](docs/adr/0009-mvp-examinateur-conversationnel.md)
 10. [Rattachement par IA, parents implicites et relances ciblées](docs/adr/0010-rattachement-par-ia-et-relances-ciblees.md)
+11. [Lecture à voix haute par une synthèse serveur, plafonnée au gratuit](docs/adr/0011-lecture-par-synthese-vocale-serveur.md)
 
 ## Licences
 

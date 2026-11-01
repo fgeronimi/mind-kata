@@ -57,7 +57,7 @@ docs/adr/        notes de décision
 - L'IA passe par l'interface `ModeleIA` (`apps/web/lib/ia/`) : le fournisseur n'est
   connu que de `fabrique.ts`, le budget est un décorateur qui s'applique à tous.
 - Cible : Cloud Run (scale à zéro), Artifact Registry, Secret Manager, Firestore (le
-  seul compteur de budget), Vertex AI, déploiement par GitHub Actions + Workload
+  seul compteur de budget), Vertex AI, Text-to-Speech (lecture, ADR 0011), déploiement par GitHub Actions + Workload
   Identity Federation. Infra ajoutée lot par lot, pas avant.
 - Ne pas créer un package ou un service tant qu'un lot n'en a pas besoin.
 
