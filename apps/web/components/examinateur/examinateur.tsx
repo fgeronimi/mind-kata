@@ -7,12 +7,12 @@ import {
   evaluer,
   type Flashcard,
   reperer,
+  verdict,
 } from "@mind-kata/core/evaluation";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useReducer, useRef } from "react";
 import { ArbreRevele } from "@/components/exercices/arbre-revele";
 import { LONGUEUR_MAX_MESSAGE } from "@/lib/examinateur/limites";
-import { verdict } from "@/lib/examinateur/verdict";
 import type { Message } from "@/lib/ia/modele";
 import { demanderTour } from "./appel";
 

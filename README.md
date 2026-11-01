@@ -5,8 +5,8 @@
 
 Outil d'entraînement et d'évaluation par la pratique. On y révise des concepts déclinés
 par niveau de séniorité, on répond à des situations dont la réponse attendue est un
-**arbre de raisonnement**, et on passe des simulations d'entretien face à un
-examinateur IA.
+**arbre de raisonnement**, et on s'entraîne en conversation avec un examinateur IA qui
+relance, puis rend un verdict de niveau.
 
 Le moteur est générique : chaque discipline se branche sous forme de **pack de
 domaine**. Le premier est le system design.
@@ -15,8 +15,8 @@ domaine**. Le premier est le system design.
 
 ## Pour qui
 
-- **S'entraîner** : réviser, enchaîner des exercices éclair, passer une simulation puis
-  recevoir un débrief selon une grille par niveau (confirmé, senior, lead).
+- **S'entraîner** : réviser, enchaîner des exercices éclair, répondre à un examinateur
+  IA qui relance puis rend un verdict de niveau (confirmé, senior, lead).
 - **Évaluer** : faire passer une simulation et obtenir une évaluation argumentée, à
   relire et valider par une personne.
 
@@ -35,8 +35,8 @@ graph LR
   C --> F[CDC]
 ```
 
-Un nœud ne compte que si son parent a été cité, et vaut davantage avec sa
-justification : réciter des mots sans les relier ne rapporte rien. L'IA rattache la
+Un nœud ne compte que si son parent a été cité, ou que son idée a été exprimée :
+réciter des mots sans les relier ne rapporte rien. L'IA rattache la
 réponse libre aux nœuds et pose les relances ; **le score est calculé par du code
 déterministe**, reproductible et explicable ([ADR 0005](docs/adr/0005-score-deterministe-ia-pour-les-relances.md)).
 
@@ -49,50 +49,53 @@ graph LR
   gha -- image --> ar[Artifact Registry]
   gha -- déploie --> run[Cloud Run<br/>Next.js]
   user[Navigateur] --> run
-  run -. lot 3 .-> sql[(Cloud SQL)]
-  run -. lot 4 .-> claude[API Claude]
-  run -. lot 5 .-> ps[Pub/Sub] -.-> worker[Worker Node.js] -.-> gh[PR GitHub]
+  run -- examinateur --> vertex[Vertex AI<br/>Gemini Flash-Lite]
+  run -- budget --> fs[(Firestore)]
+  sm[Secret Manager] --> run
+  run -. plus tard .-> ps[Pub/Sub] -.-> worker[Worker Node.js] -.-> gh[PR GitHub]
 ```
 
 En trait plein, ce qui est en place ; en pointillé, ce qui arrive avec les lots
 suivants.
 
 ```
-apps/web/          Next.js (App Router) : pages, route handlers, server actions
+apps/web/          Next.js (App Router) : pages, route handlers, server actions,
+                   examinateur IA derrière une interface de modèle
 packages/content/  packs de domaine en Markdown + YAML, source de vérité
 packages/core/     schémas Zod, chargeur de pack, score et rapprochement des réponses
-infra/             préparation du projet GCP, puis Terraform (lot 3)
+infra/             scripts de préparation du projet GCP, à blanc par défaut
 docs/adr/          notes de décision
 ```
 
 ## Stack et pourquoi
 
-| Brique      | Choix                                         | Pourquoi                                                                                                                                           |
-| ----------- | --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Application | Next.js 16, App Router, TypeScript strict     | Un seul framework pour le statique, le serveur et le streaming ([ADR 0001](docs/adr/0001-nextjs-seul.md))                                          |
-| Style       | Tailwind CSS 4                                | Standard de l'écosystème, sans couche CSS à maintenir                                                                                              |
-| Contenu     | Markdown + YAML validés par Zod               | Versionné, relu en PR, validé en CI ([ADR 0003](docs/adr/0003-contenu-dans-git.md), [ADR 0007](docs/adr/0007-contenu-valide-et-rendu-au-build.md)) |
-| Schémas     | Mermaid, dessiné à la demande                 | Schémas en texte, relus en PR ; la bibliothèque n'est chargée que sur les pages qui en contiennent                                                 |
-| Hébergement | Cloud Run, `europe-west1`                     | Conteneur à zéro instance au repos, cible définitive dès le départ ([ADR 0002](docs/adr/0002-premier-jalon-et-infrastructure-progressive.md))      |
-| Déploiement | GitHub Actions + Workload Identity Federation | Aucune clé de compte de service stockée ([ADR 0006](docs/adr/0006-deploiement-sans-cle-par-workload-identity-federation.md))                       |
-| Qualité     | ESLint, Prettier, Vitest, Playwright          | Même `make check` en local et en CI ; parcours joués dans un vrai navigateur, contre le serveur de production                                      |
-| Monorepo    | pnpm workspaces                               | Logique partagée entre application et workers, un seul lockfile                                                                                    |
+| Brique      | Choix                                         | Pourquoi                                                                                                                                                               |
+| ----------- | --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Application | Next.js 16, App Router, TypeScript strict     | Un seul framework pour le statique, le serveur et le streaming ([ADR 0001](docs/adr/0001-nextjs-seul.md))                                                              |
+| Style       | Tailwind CSS 4                                | Standard de l'écosystème, sans couche CSS à maintenir                                                                                                                  |
+| Contenu     | Markdown + YAML validés par Zod               | Versionné, relu en PR, validé en CI ([ADR 0003](docs/adr/0003-contenu-dans-git.md), [ADR 0007](docs/adr/0007-contenu-valide-et-rendu-au-build.md))                     |
+| Schémas     | Mermaid, dessiné à la demande                 | Schémas en texte, relus en PR ; la bibliothèque n'est chargée que sur les pages qui en contiennent                                                                     |
+| Hébergement | Cloud Run, `europe-west1`                     | Conteneur à zéro instance au repos, cible définitive dès le départ ([ADR 0002](docs/adr/0002-premier-jalon-et-infrastructure-progressive.md))                          |
+| Déploiement | GitHub Actions + Workload Identity Federation | Aucune clé de compte de service stockée ([ADR 0006](docs/adr/0006-deploiement-sans-cle-par-workload-identity-federation.md))                                           |
+| Qualité     | ESLint, Prettier, Vitest, Playwright          | Même `make check` en local et en CI ; parcours joués dans un vrai navigateur, contre le serveur de production                                                          |
+| Monorepo    | pnpm workspaces                               | Logique partagée entre application et workers, un seul lockfile                                                                                                        |
+| IA          | Gemini Flash-Lite sur Vertex AI               | Sans clé (compte de service), facturé sur GCP, plafonné par l'application ; fournisseur interchangeable ([ADR 0009](docs/adr/0009-mvp-examinateur-conversationnel.md)) |
 
 ## Avancement
 
-| Lot                        | Contenu                                                                     | État |
-| -------------------------- | --------------------------------------------------------------------------- | ---- |
-| 0. Socle                   | Monorepo, outillage, CI, image Docker, déploiement continu sans clé         | ✅   |
-| 1. Contenu et fiches       | Pack system design, schémas Zod, pages concepts, architectures, simulations | ✅   |
-| 2. Exercices en arbre      | Tirage, réponse, révélation de l'arbre, score par couches                   | ✅   |
-| 3. Back-end et progression | Comptes, progression sauvegardée, répétition espacée, Terraform             | ⏳   |
-| 4. Coach IA                | Simulation conversationnelle, relances, débrief selon la grille             | —    |
-| 5. Contributions           | Proposition → PR → review IA → validation humaine                           | —    |
-| 6. Ingestion de documents  | Document déposé → propositions de contenu à valider                         | —    |
-| 7. Mode évaluation         | Après cadrage juridique (AI Act, RGPD)                                      | —    |
+| Lot                   | Contenu                                                                     | État |
+| --------------------- | --------------------------------------------------------------------------- | ---- |
+| 0. Socle              | Monorepo, outillage, CI, image Docker, déploiement continu sans clé         | ✅   |
+| 1. Contenu et fiches  | Pack system design, schémas Zod, pages concepts, architectures, simulations | ✅   |
+| 2. Exercices en arbre | Tirage, réponse, révélation de l'arbre, score par couches                   | ✅   |
+| A. Examinateur texte  | Chat, relances ciblées, score par le code, verdict, plafonds, repli         | ✅   |
+| B. Voix               | Micro et réponse lue à voix haute, API du navigateur                        | ⏳   |
+| C. Fiche de séance    | Concepts manquants, liens, version imprimable                               | —    |
+| Plus tard             | Simulation complète, comptes, contributions, ingestion, mode évaluation     | —    |
 
 **Premier jalon atteint** (lots 0 à 2) : un site utilisable sans base ni API, avec des
-exercices jouables de bout en bout.
+exercices jouables de bout en bout. **MVP conversationnel** (lot A) : l'examinateur IA,
+réservé par code d'accès, sans base de données et pour quelques centimes par mois.
 
 **Contenu du pack system design** : 107 concepts déclinés sur trois niveaux, 62
 exercices éclair en arbre, 15 architectures types avec leur schéma, 8 guides (méthode,
@@ -109,6 +112,7 @@ make install    # dépendances
 make dev        # http://localhost:3000
 make check      # formatage, lint, types, tests — ce que vérifie la CI
 make build && make test-e2e    # parcours Playwright contre le serveur de production
+make test-firestore            # compteur de budget contre l'émulateur Firestore (Docker)
 make help       # toutes les cibles
 ```
 
@@ -131,6 +135,8 @@ options envisagées, décision, conséquences.
 6. [Déploiement sans clé, par Workload Identity Federation](docs/adr/0006-deploiement-sans-cle-par-workload-identity-federation.md)
 7. [Contenu validé et rendu au build](docs/adr/0007-contenu-valide-et-rendu-au-build.md)
 8. [Rapprochement lexical des réponses, avant l'IA](docs/adr/0008-rapprochement-lexical-avant-l-ia.md)
+9. [MVP : un examinateur conversationnel, sans base de données](docs/adr/0009-mvp-examinateur-conversationnel.md)
+10. [Rattachement par IA, parents implicites et relances ciblées](docs/adr/0010-rattachement-par-ia-et-relances-ciblees.md)
 
 ## Licences
 

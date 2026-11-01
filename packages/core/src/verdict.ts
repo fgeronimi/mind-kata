@@ -1,4 +1,4 @@
-import type { Domaine } from "@mind-kata/core/evaluation";
+import type { Domaine } from "./domaine";
 
 export interface Verdict {
   // Absent quand aucun niveau n'est atteint sur au moins la moitié des questions.

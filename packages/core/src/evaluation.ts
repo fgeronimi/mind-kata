@@ -13,3 +13,5 @@ export {
   type NoeudParcouru,
   parcourir,
 } from "./score";
+export { cibleDeRelance } from "./relance";
+export { type Verdict, verdict } from "./verdict";

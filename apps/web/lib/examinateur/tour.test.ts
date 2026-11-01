@@ -1,13 +1,8 @@
-import {
-  type Domaine,
-  evaluer,
-  type Flashcard,
-} from "@mind-kata/core/evaluation";
+import type { Domaine, Flashcard } from "@mind-kata/core/evaluation";
 import { describe, expect, it } from "vitest";
 import { creerModeleFaux } from "@/lib/ia/faux";
 import type { Message, Requete } from "@/lib/ia/modele";
 import {
-  cibleDeRelance,
   construireRattachement,
   construireRelance,
   jouerTour,
@@ -79,28 +74,6 @@ describe("requêtes de l'examinateur", () => {
     expect(systeme).toContain("« verrou »");
     expect(systeme).not.toContain("cache stampede");
     expect(schemaJson).toBeUndefined();
-  });
-});
-
-describe("cible de relance", () => {
-  it("vise la racine manquante avant la couche suivante", () => {
-    const evaluation = evaluer(carte.arbre, new Set(), niveaux);
-    expect(cibleDeRelance(carte.arbre, evaluation)?.chemin).toBe("0");
-  });
-
-  it("vise l'enfant manquant une fois le parent acquis", () => {
-    const evaluation = evaluer(carte.arbre, new Set(["0"]), niveaux);
-    expect(cibleDeRelance(carte.arbre, evaluation)?.chemin).toBe("0.0");
-  });
-
-  it("vise le parent d'un orphelin, pas l'orphelin", () => {
-    const evaluation = evaluer(carte.arbre, new Set(["0.0"]), niveaux);
-    expect(cibleDeRelance(carte.arbre, evaluation)?.chemin).toBe("0");
-  });
-
-  it("ne vise rien quand tout est trouvé", () => {
-    const evaluation = evaluer(carte.arbre, new Set(["0", "0.0"]), niveaux);
-    expect(cibleDeRelance(carte.arbre, evaluation)).toBeUndefined();
   });
 });
 
