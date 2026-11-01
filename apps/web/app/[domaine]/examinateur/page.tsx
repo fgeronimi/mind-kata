@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import type { Flashcard } from "@mind-kata/core/evaluation";
 import Link from "next/link";
 import { Suspense } from "react";
+import { Examinateur } from "@/components/examinateur/examinateur";
 import { listerDomaines, trouverPack } from "@/lib/contenu";
 import { exigerAcces } from "@/lib/acces/session";
 
@@ -17,23 +19,21 @@ export const metadata: Metadata = {
 
 // Le cookie n'existe qu'à la requête : la garde est rendue à la demande, dans un
 // Suspense, pendant que l'en-tête de la page reste statique.
-async function Garde({ domaine }: { domaine: string }) {
-  await exigerAcces(`/${domaine}/examinateur`);
-  return (
-    <p className="mt-8 rounded-lg border border-border p-4">
-      L&apos;examinateur arrive bientôt. En attendant, les{" "}
-      <Link href={`/${domaine}/exercices`} className="text-accent underline">
-        exercices éclair
-      </Link>{" "}
-      restent disponibles.
-    </p>
-  );
+async function Garde({
+  domaine,
+  cartes,
+}: {
+  domaine: Parameters<typeof Examinateur>[0]["domaine"];
+  cartes: Flashcard[];
+}) {
+  await exigerAcces(`/${domaine.id}/examinateur`);
+  return <Examinateur domaine={domaine} cartes={cartes} />;
 }
 
 export default async function PageExaminateur({
   params,
 }: PageProps<"/[domaine]/examinateur">) {
-  const { domaine } = trouverPack((await params).domaine);
+  const { domaine, flashcards } = trouverPack((await params).domaine);
   return (
     <>
       <nav aria-label="Fil d'Ariane" className="text-sm text-muted">
@@ -43,9 +43,14 @@ export default async function PageExaminateur({
         <span> › Examinateur</span>
       </nav>
       <h1 className="mt-2 text-3xl font-semibold">Examinateur</h1>
-      <Suspense>
-        <Garde domaine={domaine.id} />
-      </Suspense>
+      <div className="mt-6">
+        <Suspense>
+          <Garde
+            domaine={{ id: domaine.id, niveaux: domaine.niveaux }}
+            cartes={flashcards}
+          />
+        </Suspense>
+      </div>
     </>
   );
 }

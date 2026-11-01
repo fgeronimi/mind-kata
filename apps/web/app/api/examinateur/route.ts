@@ -2,11 +2,8 @@ import { domainesDisponibles } from "@mind-kata/content";
 import { z } from "zod";
 import { accesValide } from "@/lib/acces/session";
 import { trouverPack } from "@/lib/contenu";
-import {
-  jouerTour,
-  LONGUEUR_MAX_MESSAGE,
-  MAX_RELANCES,
-} from "@/lib/examinateur/tour";
+import { LONGUEUR_MAX_MESSAGE, MAX_RELANCES } from "@/lib/examinateur/limites";
+import { jouerTour } from "@/lib/examinateur/tour";
 import { BudgetEpuise } from "@/lib/ia/budget";
 import { modeleExaminateur } from "@/lib/ia/fabrique";
 

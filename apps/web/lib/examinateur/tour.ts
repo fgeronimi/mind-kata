@@ -9,9 +9,7 @@ import {
 } from "@mind-kata/core/evaluation";
 import { z } from "zod";
 import type { Message, ModeleIA, Requete } from "@/lib/ia/modele";
-
-export const MAX_RELANCES = 2;
-export const LONGUEUR_MAX_MESSAGE = 2000;
+import { MAX_RELANCES } from "./limites";
 const MAX_JETONS_SORTIE = 400;
 
 export interface Tour {

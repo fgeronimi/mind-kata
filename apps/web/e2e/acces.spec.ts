@@ -20,7 +20,9 @@ test("l'examinateur demande le code d'accès, puis ouvre la page", async ({
   await expect(
     page.getByRole("heading", { level: 1, name: "Examinateur" }),
   ).toBeVisible();
-  await expect(page.getByText("L'examinateur arrive bientôt.")).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Commencer une séance" }),
+  ).toBeVisible();
 });
 
 test("l'API de l'examinateur refuse une requête sans code", async ({
