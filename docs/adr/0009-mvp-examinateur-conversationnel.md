@@ -40,10 +40,20 @@ Option 2, en trois lots :
 
 Choix techniques :
 
-- **Claude par Vertex AI**, avec le SDK officiel : l'appel s'authentifie avec le compte
-  de service de Cloud Run, sans clé API à stocker, et la facturation suit le projet GCP
-  et ses alertes. Modèle par défaut : **Claude Haiku**, suffisant pour des tâches courtes
-  et cadrées (relance, rattachement à un arbre) et compatible avec le budget.
+- **Un modèle léger par Vertex AI**, choisi sur mesure entre **Claude Haiku** et
+  **Gemini Flash-Lite** : l'appel s'authentifie avec le compte de service de Cloud Run,
+  sans clé API à stocker, et la facturation suit le projet GCP et ses alertes.
+  - Le modèle est caché derrière une interface de l'examinateur (rattacher une réponse à
+    l'arbre, relancer, rendre le verdict), avec un adaptateur par fournisseur et un faux
+    pour les tests.
+  - Le choix se fait sur un **jeu d'évaluation** : une vingtaine de réponses rédigées
+    sur des situations du pack, avec les nœuds attendus pour chacune. On mesure les nœuds
+    trouvés, les faux positifs, la qualité des relances et le coût réel ; le jeu sert
+    ensuite de test de non-régression du prompt.
+  - Le coût ne départage pas : les deux tiennent largement dans le budget. La qualité
+    en français, sur des réponses orales approximatives, décide.
+  - Repli si l'activation d'un modèle tiers sur Vertex bloque : l'API de l'éditeur en
+    direct, avec une clé dans Secret Manager.
 - **Accès réservé** par un code d'accès, vérifié côté serveur : l'outil n'est pas ouvert
   au public tant que les coûts ne sont pas maîtrisés.
 - **Plafonds de consommation appliqués par l'application**, parce qu'un budget GCP alerte
@@ -70,3 +80,4 @@ Choix techniques :
   l'usage le justifie.
 - Les tarifs et la disponibilité des modèles sur Vertex sont fixés par Google : les
   constantes de coût sont dans la configuration et vérifiées à la mise en place.
+- Changer de modèle revient à changer d'adaptateur et à repasser le jeu d'évaluation.
