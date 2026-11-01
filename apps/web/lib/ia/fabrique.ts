@@ -27,20 +27,21 @@ const creer = (): ModeleIA => {
         // contre l'émulateur, qui n'accepte pas REST sans identifiants.
         creerCompteurFirestore(new Firestore({ projectId: projet })),
       );
-    // Pour Playwright : déterministe et gratuit. Première réponse relancée, la
-    // suivante rattachée à la racine ; « panne » simule un fournisseur en échec.
+    // Pour Playwright : déterministe et gratuit. La première réponse n'est rattachée à
+    // rien, donc relancée ; la suivante est rattachée à tout l'arbre (identifiants lus
+    // dans le prompt). « panne » simule un fournisseur en échec.
     case "faux":
       return avecBudget(
         creerModeleFaux({
-          reponses: ({ messages }) => {
+          reponses: ({ systeme, messages, schemaJson }) => {
             if (messages.some((m) => m.texte.includes("panne"))) {
               throw new Error("Panne simulée.");
             }
-            return JSON.stringify(
-              messages.length === 1
-                ? { cites: [], relance: "Pouvez-vous préciser ?" }
-                : { cites: ["0"], relance: "" },
+            if (!schemaJson) return "Pouvez-vous préciser ?";
+            const tous = [...systeme.matchAll(/\[([\d.]+)\]/g)].map(
+              (m) => m[1],
             );
+            return JSON.stringify({ cites: messages.length === 1 ? [] : tous });
           },
         }),
         creerCompteurMemoire(),
