@@ -2,9 +2,11 @@ packages:
   - apps/*
   - packages/*
 
-# pnpm bloque les scripts d'installation par défaut. Ces deux paquets livrent leur
-# binaire natif précompilé en dépendance optionnelle ; leur postinstall n'est qu'un
-# repli inutile ici.
+# pnpm bloque les scripts d'installation par défaut. sharp et unrs-resolver livrent
+# leur binaire natif précompilé en dépendance optionnelle ; leur postinstall n'est
+# qu'un repli inutile ici. Celui de protobufjs (client Firestore) ne fait qu'afficher
+# un avertissement de version.
 allowBuilds:
+  protobufjs: false
   sharp: false
   unrs-resolver: false
