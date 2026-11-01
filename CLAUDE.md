@@ -7,8 +7,8 @@ Dépôt **public**, vitrine pro : chaque choix doit être lisible par un recrute
 
 ## État d'avancement
 
-Lot en cours : **A — Examinateur texte** (MVP conversationnel, ADR 0009). Lots 0 à 2
-terminés le 2026-10-31 : premier jalon atteint. Mettre cette ligne à jour à chaque fin de lot.
+Lot en cours : **B — Voix** (MVP conversationnel, ADR 0009). Lots 0 à 2 terminés le
+2026-10-31 (premier jalon), lot A (examinateur texte) le 2026-11-01. Mettre cette ligne à jour à chaque fin de lot.
 
 ## Commandes
 
@@ -43,12 +43,9 @@ racine les lancent récursivement avec `--if-present`.
 
 ```
 apps/web/        Next.js App Router : pages, route handlers, server actions
-apps/worker/     Node.js TS, consomme Pub/Sub (à partir du lot 5)
 packages/content packs de domaine (Markdown + YAML), source de vérité
 packages/core    logique métier : score des arbres, domaines, contributions
-packages/db      Prisma (à partir du lot 3)
-packages/shared  types et schémas Zod
-infra/           Terraform GCP (à partir du lot 3)
+infra/           scripts de préparation GCP (bootstrap, examinateur)
 docs/adr/        notes de décision
 ```
 
@@ -56,9 +53,12 @@ docs/adr/        notes de décision
 - La logique métier vit dans `packages/core`, jamais dans les pages ou composants.
 - Le contenu vit dans Git ; la base ne stocke que des identifiants de contenu.
 - Le score est calculé par du code déterministe ; l'IA rattache les réponses aux nœuds
-  et mène les relances, elle ne note pas.
-- Cible : Cloud Run (scale à zéro), Artifact Registry, Secret Manager, déploiement par
-  GitHub Actions + Workload Identity Federation. Infra ajoutée lot par lot, pas avant.
+  et formule les relances, elle ne note pas et ne choisit pas la cible (ADR 0010).
+- L'IA passe par l'interface `ModeleIA` (`apps/web/lib/ia/`) : le fournisseur n'est
+  connu que de `fabrique.ts`, le budget est un décorateur qui s'applique à tous.
+- Cible : Cloud Run (scale à zéro), Artifact Registry, Secret Manager, Firestore (le
+  seul compteur de budget), Vertex AI, déploiement par GitHub Actions + Workload
+  Identity Federation. Infra ajoutée lot par lot, pas avant.
 - Ne pas créer un package ou un service tant qu'un lot n'en a pas besoin.
 
 ## Règle du moteur générique
