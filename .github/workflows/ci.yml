@@ -117,6 +117,11 @@ jobs:
             --max-instances=2
             --cpu=1
             --memory=512Mi
+          # Références vers Secret Manager, lues par le compte d'exécution au démarrage :
+          # les valeurs ne passent jamais par GitHub.
+          secrets: |-
+            EXAMINATEUR_CODE_EMPREINTE=examinateur-code-empreinte:latest
+            EXAMINATEUR_CLE_SESSION=examinateur-cle-session:latest
 
       - name: Vérifie que le service répond
         run: curl --fail --silent --show-error --output /dev/null "${{ steps.deploiement.outputs.url }}"

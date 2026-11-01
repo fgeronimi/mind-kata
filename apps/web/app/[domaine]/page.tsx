@@ -45,6 +45,14 @@ export default async function PageDomaine({ params }: PageProps<"/[domaine]">) {
           S&apos;entraîner : {flashcards.length} exercices éclair
         </Link>
       )}
+      {flashcards.length > 0 && (
+        <Link
+          href={`/${domaine.id}/examinateur`}
+          className="mt-6 ml-3 inline-block rounded-md border border-border px-4 py-2 font-semibold hover:border-accent"
+        >
+          Examinateur IA (accès réservé)
+        </Link>
+      )}
 
       {guides.length > 0 && (
         <>
