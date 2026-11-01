@@ -15,6 +15,7 @@ import { ArbreRevele } from "@/components/exercices/arbre-revele";
 import { LONGUEUR_MAX_MESSAGE } from "@/lib/examinateur/limites";
 import type { Message } from "@/lib/ia/modele";
 import { demanderTour } from "./appel";
+import { useDictee, useLecture } from "./voix";
 
 const TAILLE_SEANCE = 10;
 
@@ -188,6 +189,48 @@ export function Examinateur({ domaine, cartes }: Props) {
     if (!enAttente) saisie.current?.focus();
   }, [nombreBulles, enAttente]);
 
+  const dictee = useDictee((texte) => {
+    if (saisie.current)
+      saisie.current.value = texte.slice(0, LONGUEUR_MAX_MESSAGE);
+  });
+  const lecture = useLecture();
+  const { lire } = lecture;
+
+  // Lit ce que l'examinateur vient de dire, une seule fois : les bulles déjà lues
+  // sont comptées, et une nouvelle séance repart de zéro.
+  const lues = useRef(0);
+  useEffect(() => {
+    const bulles = etat.phase === "accueil" ? [] : etat.bulles;
+    if (bulles.length < lues.current) lues.current = 0;
+    const nouvelles = bulles.slice(lues.current);
+    lues.current = bulles.length;
+    if (nouvelles.length === 0) return;
+    const nom = (niveau: string | undefined) =>
+      niveau === undefined ? "aucun" : (libellesNiveaux[niveau] ?? niveau);
+    const textes = nouvelles.map((bulle) => {
+      switch (bulle.type) {
+        case "question":
+          return `Question ${String(bulle.numero)}. ${bulle.texte}`;
+        case "relance":
+        case "info":
+          return bulle.texte;
+        case "retour":
+          return `${String(bulle.evaluation.points)} sur ${String(bulle.evaluation.maximum)}, niveau ${nom(bulle.evaluation.niveauAtteint)}.`;
+        case "candidat":
+          return "";
+      }
+    });
+    if (etat.phase === "bilan") {
+      const { niveau } = verdict(
+        etat.resultats.map((r) => r.evaluation.niveauAtteint),
+        domaine.niveaux,
+      );
+      textes.push(`Verdict : ${nom(niveau)}.`);
+    }
+    const texte = textes.filter(Boolean).join(" ");
+    if (texte !== "") lire(texte);
+  }, [etat, lire, libellesNiveaux, domaine.niveaux]);
+
   const noterParMotsCles = (carte: Flashcard, echanges: Message[]) => {
     const texte = echanges
       .filter((m) => m.role === "candidat")
@@ -262,6 +305,18 @@ export function Examinateur({ domaine, cartes }: Props) {
     );
   }
 
+  const reglageLecture = lecture.disponible && (
+    <label className="mb-4 flex items-center gap-2 text-sm">
+      <input
+        type="checkbox"
+        checked={lecture.active}
+        onChange={lecture.basculer}
+        className="size-4 accent-accent"
+      />
+      Lire l&apos;examinateur à voix haute
+    </label>
+  );
+
   const fil = (
     <ol
       role="log"
@@ -295,6 +350,7 @@ export function Examinateur({ domaine, cartes }: Props) {
     ).length;
     return (
       <>
+        {reglageLecture}
         {fil}
         <section
           aria-labelledby="titre-verdict"
@@ -336,12 +392,14 @@ export function Examinateur({ domaine, cartes }: Props) {
 
   return (
     <>
+      {reglageLecture}
       {fil}
       <form
         onSubmit={(e) => {
           e.preventDefault();
           const champ = e.currentTarget.elements.namedItem("reponse");
           if (!(champ instanceof HTMLTextAreaElement)) return;
+          dictee.arreter();
           const texte = champ.value.trim();
           champ.value = "";
           void soumettre(texte);
@@ -368,10 +426,51 @@ export function Examinateur({ domaine, cartes }: Props) {
           >
             Répondre
           </button>
+          {dictee.disponible && (
+            <button
+              type="button"
+              aria-pressed={dictee.ecoute}
+              disabled={etat.enAttente}
+              onClick={() => {
+                if (dictee.ecoute) {
+                  dictee.arreter();
+                  return;
+                }
+                // Le micro ne doit pas entendre la synthèse vocale.
+                lecture.arreter();
+                dictee.demarrer(saisie.current?.value.trim() ?? "");
+              }}
+              className={`rounded-md border px-4 py-2 font-semibold disabled:opacity-50 ${
+                dictee.ecoute
+                  ? "border-red-600 text-red-700 dark:text-red-400"
+                  : "border-border"
+              }`}
+            >
+              {dictee.ecoute ? "Arrêter la dictée" : "Parler"}
+            </button>
+          )}
           <span aria-live="polite" className="text-sm text-muted">
-            {etat.enAttente ? "L'examinateur lit votre réponse…" : ""}
+            {etat.enAttente
+              ? "L'examinateur lit votre réponse…"
+              : dictee.ecoute
+                ? "Je vous écoute… Arrêtez la dictée, relisez, puis répondez."
+                : ""}
           </span>
         </div>
+        {dictee.erreur && (
+          <p
+            role="alert"
+            className="mt-2 text-sm text-red-700 dark:text-red-400"
+          >
+            {dictee.erreur}
+          </p>
+        )}
+        {dictee.disponible && (
+          <p className="mt-2 text-xs text-muted">
+            Selon le navigateur, la dictée peut passer par les serveurs de son
+            éditeur (Google pour Chrome).
+          </p>
+        )}
       </form>
       <div ref={fin} />
     </>
