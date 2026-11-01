@@ -10,7 +10,7 @@
 # politique IAM. Il s'arrête net sur toute ressource existante qui n'est pas à lui.
 # Relançable : ce qui existe déjà est laissé tel quel.
 #
-# Remplacé par Terraform au lot 3 (les ressources seront importées).
+# Les ressources de l'examinateur IA sont créées par infra/examinateur.sh.
 
 set -euo pipefail
 
@@ -39,28 +39,8 @@ APPLIQUER=false
 
 : "${BILLING_ACCOUNT:?Définir BILLING_ACCOUNT (gcloud billing accounts list)}"
 
-existe() { "$@" >/dev/null 2>&1; }
-info() { printf '  \033[32m✓\033[0m %s\n' "$*"; }
-arret() { printf '\n\033[31m✗ %s\033[0m\n' "$*" >&2; exit 1; }
-
-executer() {
-  if $APPLIQUER; then
-    printf '  \033[36m+\033[0m %s\n' "$*"
-    # Une API tout juste activée peut répondre PERMISSION_DENIED pendant environ une
-    # minute, le temps que l'activation se propage.
-    local tentative
-    for tentative in 1 2 3 4 5; do
-      "$@" && return 0
-      ((tentative < 5)) || return 1
-      printf '  \033[33m… échec, nouvelle tentative dans 20 s (%d/4)\033[0m\n' "$tentative"
-      sleep 20
-    done
-  else
-    printf '  \033[33m[à blanc]\033[0m %s\n' "$*"
-  fi
-}
-
-etape() { printf '\n\033[1m%s\033[0m\n' "$*"; }
+# shellcheck source=infra/commun.sh
+source "$(dirname "$0")/commun.sh"
 
 # --- Projet --------------------------------------------------------------------------
 
