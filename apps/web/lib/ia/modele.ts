@@ -21,8 +21,11 @@ export interface Message {
 
 export interface Requete {
   systeme: string;
+  // Commence par le candidat : la question de départ fait partie du système.
   messages: Message[];
   maxJetonsSortie: number;
+  // Schéma JSON imposé à la réponse, quand le texte doit être lu par le code.
+  schemaJson?: Record<string, unknown>;
 }
 
 export interface Reponse {

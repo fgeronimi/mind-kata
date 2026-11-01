@@ -8,10 +8,11 @@ export interface Plafonds {
 }
 
 // Un budget GCP alerte mais ne coupe pas : ces plafonds sont la vraie limite
-// (ADR 0009). Marge sous les 2 € mensuels.
+// (ADR 0009). Marge sous les 2 € mensuels. Une séance compte jusqu'à 30 appels :
+// le plafond d'appels laisse quelques séances par jour, celui du coût tranche.
 export const PLAFONDS: Plafonds = {
   coutParJour: 100_000,
-  appelsParJour: 40,
+  appelsParJour: 200,
   coutParMois: 1_800_000,
 };
 

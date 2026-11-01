@@ -5,8 +5,9 @@ packages:
 # pnpm bloque les scripts d'installation par défaut. sharp et unrs-resolver livrent
 # leur binaire natif précompilé en dépendance optionnelle ; leur postinstall n'est
 # qu'un repli inutile ici. Celui de protobufjs (client Firestore) ne fait qu'afficher
-# un avertissement de version.
+# un avertissement de version, celui de @google/genai rien du tout.
 allowBuilds:
+  "@google/genai": false
   protobufjs: false
   sharp: false
   unrs-resolver: false
