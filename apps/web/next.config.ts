@@ -16,6 +16,10 @@ const nextConfig: NextConfig = {
   },
   // Les paquets du workspace exposent leurs sources TypeScript : Next les compile.
   transpilePackages: ["@mind-kata/core", "@mind-kata/content"],
+  // Les clients Google chargent leurs définitions protobuf à l'exécution : empaquetés,
+  // ils échouent à sérialiser (« toProto3JSON: don't know how to convert value »).
+  // Laissés dans node_modules, copiés tels quels par le traçage.
+  serverExternalPackages: ["@google-cloud/firestore", "@google/genai"],
   cacheComponents: true,
   partialPrefetching: true,
   turbopack: {
