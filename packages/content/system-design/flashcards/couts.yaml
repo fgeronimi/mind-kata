@@ -43,6 +43,7 @@
           synonymes: [mise en cache]
           pourquoi: ne pas regénérer un résumé inchangé
           niveau: confirme
+          concept: strategies-de-cache
     - mot: petit modèle
       synonymes: [routage de modèle, modèle plus petit]
       pourquoi: réserver le gros modèle aux cas difficiles

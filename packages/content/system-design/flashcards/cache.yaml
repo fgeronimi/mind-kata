@@ -12,6 +12,7 @@
           synonymes: [lock, mutex]
           pourquoi: une seule requête recalcule, les autres attendent
           niveau: senior
+          concept: verrou-distribue
         - mot: stale-while-revalidate
           synonymes: [servir le périmé]
           pourquoi: servir l'ancienne valeur pendant le recalcul
