@@ -7,8 +7,9 @@ Dépôt **public**, vitrine pro : chaque choix doit être lisible par un recrute
 
 ## État d'avancement
 
-Lot en cours : **B — Voix** (MVP conversationnel, ADR 0009). Lots 0 à 2 terminés le
-2026-10-31 (premier jalon), lot A (examinateur texte) le 2026-11-01. Mettre cette ligne à jour à chaque fin de lot.
+Lot en cours : **C — Fiche de séance** (MVP conversationnel, ADR 0009). Lots 0 à 2
+terminés le 2026-10-31 (premier jalon), lot A (examinateur texte) le 2026-11-01, lot B
+(voix) le 2026-11-02. Mettre cette ligne à jour à chaque fin de lot.
 
 ## Commandes
 

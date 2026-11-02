@@ -90,13 +90,14 @@ docs/adr/          notes de décision
 | 1. Contenu et fiches  | Pack system design, schémas Zod, pages concepts, architectures, simulations | ✅   |
 | 2. Exercices en arbre | Tirage, réponse, révélation de l'arbre, score par couches                   | ✅   |
 | A. Examinateur texte  | Chat, relances ciblées, score par le code, verdict, plafonds, repli         | ✅   |
-| B. Voix               | Dictée par le navigateur, lecture par une synthèse serveur plafonnée        | ⏳   |
-| C. Fiche de séance    | Concepts manquants, liens, version imprimable                               | —    |
+| B. Voix               | Dictée par le navigateur, lecture par une synthèse serveur plafonnée        | ✅   |
+| C. Fiche de séance    | Concepts manquants, liens, version imprimable                               | ⏳   |
 | Plus tard             | Simulation complète, comptes, contributions, ingestion, mode évaluation     | —    |
 
 **Premier jalon atteint** (lots 0 à 2) : un site utilisable sans base ni API, avec des
 exercices jouables de bout en bout. **MVP conversationnel** (lot A) : l'examinateur IA,
-réservé par code d'accès, sans base de données et pour quelques centimes par mois.
+réservé par code d'accès, sans base de données et pour quelques centimes par mois ;
+il se joue à l'oral depuis le lot B.
 
 **Contenu du pack system design** : 107 concepts déclinés sur trois niveaux, 62
 exercices éclair en arbre, 15 architectures types avec leur schéma, 8 guides (méthode,
