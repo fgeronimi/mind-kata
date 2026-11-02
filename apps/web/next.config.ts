@@ -19,7 +19,11 @@ const nextConfig: NextConfig = {
   // Les clients Google chargent leurs définitions protobuf à l'exécution : empaquetés,
   // ils échouent à sérialiser (« toProto3JSON: don't know how to convert value »).
   // Laissés dans node_modules, copiés tels quels par le traçage.
-  serverExternalPackages: ["@google-cloud/firestore", "@google/genai"],
+  serverExternalPackages: [
+    "@google-cloud/firestore",
+    "@google-cloud/text-to-speech",
+    "@google/genai",
+  ],
   cacheComponents: true,
   partialPrefetching: true,
   turbopack: {

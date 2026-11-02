@@ -23,6 +23,9 @@ importers:
       '@google-cloud/firestore':
         specifier: ^9.4.0
         version: 9.4.0(supports-color@7.2.0)
+      '@google-cloud/text-to-speech':
+        specifier: ^7.2.0
+        version: 7.2.0(supports-color@7.2.0)
       '@google/genai':
         specifier: ^2.32.0
         version: 2.32.0(supports-color@7.2.0)
@@ -288,6 +291,10 @@ packages:
 
   '@google-cloud/firestore@9.4.0':
     resolution: {integrity: sha512-4tVhdRFepX5w+fRfl3H6D2+gaGQjmMiA9l+OwIwInfAkCi8iacfRx4jS9SmSfpQNlXequ55DfzFopwyFnIIJ9w==}
+    engines: {node: '>=22'}
+
+  '@google-cloud/text-to-speech@7.2.0':
+    resolution: {integrity: sha512-RsfBmiZvZ9aI8tr8PitPam5HDIL9X5upbrzBw5uZUP+syCo2AUZictX2bBeYZQa5sWx/bfp6G1sBE1TbAe4QAg==}
     engines: {node: '>=22'}
 
   '@google/genai@2.32.0':
@@ -3807,6 +3814,12 @@ snapshots:
       functional-red-black-tree: 1.0.1
       google-gax: 6.14.0(supports-color@7.2.0)
       protobufjs: 7.6.6
+    transitivePeerDependencies:
+      - supports-color
+
+  '@google-cloud/text-to-speech@7.2.0(supports-color@7.2.0)':
+    dependencies:
+      google-gax: 6.14.0(supports-color@7.2.0)
     transitivePeerDependencies:
       - supports-color
 

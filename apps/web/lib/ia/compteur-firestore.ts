@@ -2,15 +2,20 @@ import { FieldValue, type Firestore } from "@google-cloud/firestore";
 import type { Compteur, Periodes, Plafonds } from "./budget";
 import type { MicroDollars } from "./cout";
 
-// Un document par mois, budget/AAAA-MM : { cout, jours: { JJ: { cout, appels } } }.
+// Un document par mois, <collection>/AAAA-MM : { cout, jours: { JJ: { cout, appels } } }.
 // Quelques dizaines de lectures et d'écritures par jour : dans les limites gratuites.
+// « cout » est dans l'unité de l'appelant : micro-dollars pour l'IA, caractères pour
+// la voix.
 interface DocumentMois {
   cout?: number;
   jours?: Record<string, { cout?: number; appels?: number }>;
 }
 
-export const creerCompteurFirestore = (base: Firestore): Compteur => {
-  const documentDu = (mois: string) => base.collection("budget").doc(mois);
+export const creerCompteurFirestore = (
+  base: Firestore,
+  collection = "budget",
+): Compteur => {
+  const documentDu = (mois: string) => base.collection(collection).doc(mois);
 
   return {
     // Transaction : si un autre appel modifie le document entre la lecture et

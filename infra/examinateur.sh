@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Ajoute au projet Mind Kata ce dont l'examinateur IA a besoin (ADR 0009) : Vertex AI,
-# un compteur de consommation dans Firestore, le code d'accès et la clé de session dans
+# la synthèse vocale (ADR 0011), un compteur de consommation dans Firestore, le code d'accès et la clé de session dans
 # Secret Manager, et les droits du compte d'exécution. Suppose infra/bootstrap.sh passé.
 #
 # À blanc par défaut : affiche ce qui serait créé. `--appliquer` pour exécuter.
@@ -44,7 +44,8 @@ etape "API"
 executer gcloud services enable --project="$PROJECT_ID" \
   aiplatform.googleapis.com \
   firestore.googleapis.com \
-  secretmanager.googleapis.com
+  secretmanager.googleapis.com \
+  texttospeech.googleapis.com
 
 # Tant que les API ne sont pas actives (à blanc), les lectures qui suivent échouent :
 # tout apparaît alors comme à créer.
@@ -125,6 +126,7 @@ executer gcloud projects add-iam-policy-binding "$PROJECT_ID" \
   --member="serviceAccount:${SA_EXECUTION_EMAIL}" --role="roles/aiplatform.user" --condition=None
 executer gcloud projects add-iam-policy-binding "$PROJECT_ID" \
   --member="serviceAccount:${SA_EXECUTION_EMAIL}" --role="roles/datastore.user" --condition=None
+# Text-to-Speech n'a pas de rôle propre : l'API activée sur le projet du compte suffit.
 # Lecture limitée aux deux secrets de l'examinateur, pas à tout Secret Manager.
 for secret in "$SECRET_CODE" "$SECRET_SESSION"; do
   executer gcloud secrets add-iam-policy-binding "$secret" --project="$PROJECT_ID" \
