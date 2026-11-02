@@ -3,7 +3,7 @@ import type { Synthese } from "./synthese";
 
 // Voix Chirp 3 HD : la plus naturelle du catalogue, et la seule gamme avec un million
 // de caractères gratuits par mois qui ne sonne pas comme un GPS.
-export const VOIX_PAR_DEFAUT = "fr-FR-Chirp3-HD-Charon";
+export const VOIX_PAR_DEFAUT = "fr-FR-Chirp3-HD-Despina";
 
 // Au-delà, le navigateur bascule sur sa propre voix : mieux vaut lire tout de suite
 // avec une voix moins belle que faire attendre.
