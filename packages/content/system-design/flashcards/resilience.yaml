@@ -60,6 +60,7 @@
             - mot: retry-after
               pourquoi: dire au client quand réessayer, au lieu qu'il insiste aussitôt
               niveau: senior
+              concept: retry-backoff
         - mot: compteur partagé
           synonymes: [redis, cache partagé]
           pourquoi: avec plusieurs instances, la limite doit être globale

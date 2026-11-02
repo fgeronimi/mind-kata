@@ -269,6 +269,7 @@
           synonymes: [lien de téléchargement, url signée]
           pourquoi: stocker le PDF et envoyer un lien
           niveau: senior
+          concept: url-signee
     - mot: optimiser le rapport unitaire
       synonymes: [profiler, optimiser]
       pourquoi: un rapport deux fois plus rapide divise tout par deux
@@ -282,6 +283,7 @@
       synonymes: [delta, différentiel]
       pourquoi: ne traiter que ce qui a changé
       niveau: senior
+      concept: cdc
     - mot: file séparée
       synonymes: [bulkhead, workers dédiés]
       pourquoi: l'import n'occupe pas les workers des autres traitements
