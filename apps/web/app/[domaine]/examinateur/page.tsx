@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import type { Flashcard } from "@mind-kata/core/evaluation";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Examinateur } from "@/components/examinateur/examinateur";
@@ -19,24 +18,21 @@ export const metadata: Metadata = {
 
 // Le cookie n'existe qu'à la requête : la garde est rendue à la demande, dans un
 // Suspense, pendant que l'en-tête de la page reste statique.
-async function Garde({
-  domaine,
-  cartes,
-}: {
-  domaine: Parameters<typeof Examinateur>[0]["domaine"];
-  cartes: Flashcard[];
-}) {
-  await exigerAcces(`/${domaine.id}/examinateur`);
-  return <Examinateur domaine={domaine} cartes={cartes} />;
+async function Garde(props: Parameters<typeof Examinateur>[0]) {
+  await exigerAcces(`/${props.domaine.id}/examinateur`);
+  return <Examinateur {...props} />;
 }
 
 export default async function PageExaminateur({
   params,
 }: PageProps<"/[domaine]/examinateur">) {
-  const { domaine, flashcards } = trouverPack((await params).domaine);
+  const { domaine, flashcards, concepts } = trouverPack((await params).domaine);
   return (
     <>
-      <nav aria-label="Fil d'Ariane" className="text-sm text-muted">
+      <nav
+        aria-label="Fil d'Ariane"
+        className="text-sm text-muted print:hidden"
+      >
         <Link href={`/${domaine.id}`} className="hover:text-accent">
           {domaine.nom}
         </Link>
@@ -48,6 +44,7 @@ export default async function PageExaminateur({
           <Garde
             domaine={{ id: domaine.id, niveaux: domaine.niveaux }}
             cartes={flashcards}
+            termes={Object.fromEntries(concepts.map((c) => [c.id, c.terme]))}
           />
         </Suspense>
       </div>
