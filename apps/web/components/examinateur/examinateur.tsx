@@ -5,6 +5,7 @@ import {
   type Domaine,
   type Evaluation,
   evaluer,
+  ficheDeSeance,
   type Flashcard,
   reperer,
   verdict,
@@ -15,6 +16,7 @@ import { ArbreRevele } from "@/components/exercices/arbre-revele";
 import { LONGUEUR_MAX_MESSAGE } from "@/lib/examinateur/limites";
 import type { Message } from "@/lib/ia/modele";
 import { demanderTour } from "./appel";
+import { FicheDeSeance } from "./fiche";
 import { useDictee, useLecture } from "./voix";
 
 const TAILLE_SEANCE = 10;
@@ -22,6 +24,8 @@ const TAILLE_SEANCE = 10;
 interface Props {
   domaine: Pick<Domaine, "id" | "niveaux">;
   cartes: Flashcard[];
+  // Terme de chaque concept, pour les liens de la fiche de fin de séance.
+  termes: Record<string, string>;
 }
 
 // « mots-cles » : l'IA n'est plus disponible (plafond atteint ou panne), la séance
@@ -51,6 +55,7 @@ type Etat =
   | { phase: "accueil" }
   | {
       phase: "seance";
+      debut: Date;
       serie: Flashcard[];
       index: number;
       bulles: Bulle[];
@@ -61,10 +66,10 @@ type Etat =
       source: Source;
       enAttente: boolean;
     }
-  | { phase: "bilan"; bulles: Bulle[]; resultats: Resultat[] };
+  | { phase: "bilan"; debut: Date; bulles: Bulle[]; resultats: Resultat[] };
 
 type Action =
-  | { type: "commencer"; serie: Flashcard[] }
+  | { type: "commencer"; serie: Flashcard[]; debut: Date }
   | { type: "repondre"; texte: string }
   | { type: "relancer"; texte: string }
   | { type: "noter"; cites: Chemin[]; evaluation: Evaluation; source: Source }
@@ -82,6 +87,7 @@ function reduire(etat: Etat, action: Action): Etat {
   if (action.type === "commencer") {
     return {
       phase: "seance",
+      debut: action.debut,
       serie: action.serie,
       index: 0,
       bulles: [question(action.serie, 0)],
@@ -136,7 +142,7 @@ function reduire(etat: Etat, action: Action): Etat {
       ];
       const suivant = etat.index + 1;
       if (suivant >= etat.serie.length) {
-        return { phase: "bilan", bulles, resultats };
+        return { phase: "bilan", debut: etat.debut, bulles, resultats };
       }
       return {
         ...etat,
@@ -167,7 +173,7 @@ const MESSAGES_REPLI = {
     "L'examinateur IA ne répond pas. La séance continue avec la reconnaissance par mots-clés, sans relance.",
 };
 
-export function Examinateur({ domaine, cartes }: Props) {
+export function Examinateur({ domaine, cartes, termes }: Props) {
   const [etat, envoyer] = useReducer(reduire, { phase: "accueil" });
   const router = useRouter();
   const chemin = usePathname();
@@ -295,6 +301,7 @@ export function Examinateur({ domaine, cartes }: Props) {
             envoyer({
               type: "commencer",
               serie: melanger(cartes).slice(0, TAILLE_SEANCE),
+              debut: new Date(),
             });
           }}
           className="mt-4 rounded-md bg-accent px-4 py-2 font-semibold text-white disabled:opacity-50"
@@ -306,7 +313,7 @@ export function Examinateur({ domaine, cartes }: Props) {
   }
 
   const reglageLecture = lecture.disponible && (
-    <label className="mb-4 flex items-center gap-2 text-sm">
+    <label className="mb-4 flex items-center gap-2 text-sm print:hidden">
       <input
         type="checkbox"
         checked={lecture.active}
@@ -321,7 +328,7 @@ export function Examinateur({ domaine, cartes }: Props) {
     <ol
       role="log"
       aria-label="Échanges avec l'examinateur"
-      className="space-y-4"
+      className="space-y-4 print:hidden"
     >
       {etat.bulles.map((bulle, i) => (
         <li key={i}>
@@ -354,8 +361,12 @@ export function Examinateur({ domaine, cartes }: Props) {
         {fil}
         <section
           aria-labelledby="titre-verdict"
-          className="mt-8 rounded-lg border-2 border-accent p-4"
+          className="mt-8 rounded-lg border-2 border-accent p-4 print:mt-0 print:border-0 print:p-0"
         >
+          <p className="hidden text-sm text-muted print:block">
+            Séance du{" "}
+            {etat.debut.toLocaleDateString("fr-FR", { dateStyle: "long" })}
+          </p>
           <h2 id="titre-verdict" className="text-xl font-semibold">
             Verdict : {libelle(niveau)}
           </h2>
@@ -376,16 +387,33 @@ export function Examinateur({ domaine, cartes }: Props) {
               {parMotsCles > 1 ? "s" : ""} par mots-clés, sans l&apos;IA.
             </p>
           )}
-          <button
-            type="button"
-            onClick={() => {
-              envoyer({ type: "recommencer" });
-            }}
-            className="mt-4 rounded-md bg-accent px-4 py-2 font-semibold text-white"
-          >
-            Nouvelle séance
-          </button>
+          <div className="mt-4 flex gap-3 print:hidden">
+            <button
+              type="button"
+              onClick={() => {
+                window.print();
+              }}
+              className="rounded-md border border-border px-4 py-2 font-semibold"
+            >
+              Imprimer la fiche
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                envoyer({ type: "recommencer" });
+              }}
+              className="rounded-md bg-accent px-4 py-2 font-semibold text-white"
+            >
+              Nouvelle séance
+            </button>
+          </div>
         </section>
+        <FicheDeSeance
+          fiche={ficheDeSeance(etat.resultats)}
+          domaine={domaine.id}
+          termes={termes}
+          libelle={libelle}
+        />
       </>
     );
   }

@@ -15,3 +15,10 @@ export {
 } from "./score";
 export { cibleDeRelance } from "./relance";
 export { type Verdict, verdict } from "./verdict";
+export {
+  type ConceptARevoir,
+  type ElementARevoir,
+  type Fiche,
+  ficheDeSeance,
+  type QuestionDeFiche,
+} from "./fiche";
